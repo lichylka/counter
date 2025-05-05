@@ -18,10 +18,10 @@ export default function Home() {
             <li><Link href="#contact" className="hover:text-gray-300">Контакти</Link></li>
           </ul>
           <div className="flex gap-2">
-            <Button variant="default" asChild>
-              <Link href="#login">Увійти</Link>
+            <Button variant="outline" asChild className="text-black">
+              <Link href="/dashboard">Увійти</Link>
             </Button>
-            <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+            <Button variant="outline" className="bg-green-600 hover:bg-green-700" asChild>
               <Link href="#register">Зареєструватися</Link>
             </Button>
           </div>
@@ -32,7 +32,7 @@ export default function Home() {
       <section className="bg-gray-100 py-16 px-8 text-center">
         <h1 className="text-4xl font-bold mb-4">Фінансове планування вашого бізнесу — просто як ніколи</h1>
         <p className="text-lg mb-6">Автоматизуйте облік доходів, витрат, інвестицій та звітності</p>
-        <Button size="lg">Спробувати безкоштовно</Button>
+        <Button variant="outline" size="lg">Спробувати безкоштовно</Button>
       </section>
       
       {/* Features Section */}
@@ -98,7 +98,7 @@ export default function Home() {
           </Card>
         </div>
         <div className="text-center mt-8">
-          <Button size="lg">Спробувати AI-планувальник</Button>
+          <Button variant="outline" size="lg">Спробувати AI-планувальник</Button>
         </div>
       </section>
       
@@ -129,7 +129,7 @@ export default function Home() {
           </Card>
         </div>
         <div className="text-center mt-8">
-          <Button size="lg">Оформити підписку</Button>
+          <Button variant="outline" size="lg">Оформити підписку</Button>
         </div>
       </section>
       
