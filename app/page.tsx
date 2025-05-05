@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,19 +139,19 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <Card>
             <CardContent className="pt-6 text-center">
-              <p className="mb-2">"Створив фінмодель за 30 хвилин"</p>
+              <p className="mb-2">&quot;Створив фінмодель за 30 хвилин&quot;</p>
               <p className="font-bold">Олександр, фермер</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6 text-center">
-              <p className="mb-2">"P&L як ніколи зрозумілий"</p>
+              <p className="mb-2">&quot;P&L як ніколи зрозумілий&quot;</p>
               <p className="font-bold">Ірина, Львів</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6 text-center">
-              <p className="mb-2">"AI підказав змінити ідею"</p>
+              <p className="mb-2">&quot;AI підказав змінити ідею&quot;</p>
               <p className="font-bold">Дмитро, Київ</p>
             </CardContent>
           </Card>
