@@ -115,8 +115,8 @@ export default function EditValueModal({
       </Dialog>
       
       {showAddRowModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6">
+        <Dialog open={showAddRowModal} onOpenChange={setShowAddRowModal}>
+          <DialogContent className="max-w-3xl">
             <h2 className="text-xl font-semibold mb-4">Додати рядок-запис</h2>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -189,8 +189,8 @@ export default function EditValueModal({
                 💾 Зберегти
               </button>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

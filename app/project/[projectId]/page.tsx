@@ -15,6 +15,7 @@ import {
 import { useParams } from "next/navigation";
 import { useInvestmentStore } from "@/store/investmentStore";
 import { Todo } from "@/types/todo.types";
+import { usePnLStore } from "@/store/pnlStore";
 
 export default function ProjectDashboard() {
   const params = useParams();
@@ -22,6 +23,7 @@ export default function ProjectDashboard() {
     throw new Error("Project ID is not provided");
   }
   const { investments, setInvestments } = useInvestmentStore();
+  const { pnls, setPnLs } = usePnLStore();
   const [documents, setDocuments] = useState<string[]>([]);
   const [projectData] = useState({
     name: "Фасування горіхів",
@@ -62,21 +64,22 @@ export default function ProjectDashboard() {
     // Generate data only on the client side
     const projectYears = generateYears();
 
-    // Generate consistent random data and set investments in store
+    // Generate consistent random data and set investments and pnl in store
     const generatedInvestments = generateInvestmentData(projectYears);
+    const generatedPnL = generatePnLData(projectYears);
     setInvestments(generatedInvestments);
+    setPnLs(generatedPnL);
 
     setTableData({
       investments: generatedInvestments,
-      pnl: generatePnLData(projectYears),
+      pnl: generatedPnL,
       cashFlow: generateCashFlowData(projectYears),
       balance: generateBalanceData(projectYears),
     });
 
     // Load documents
     setDocuments(["Бізнес-план.pdf", "CashFlow.xlsx", "Стратегія.docx"]);
-  }, [params.projectId, setInvestments]);
-
+  }, [params.projectId, setInvestments, setPnLs]);
 
   // Generate data functions
   const generateInvestmentData = (years: Todo) => {
@@ -91,7 +94,8 @@ export default function ProjectDashboard() {
   };
 
   const generatePnLData = (years: Todo) => {
-    return years.map((year: Todo) => ({
+    return years.map((year: Todo, index: Todo) => ({
+      id: `inv-${year}-${index}`,
       year,
       income: Math.floor(Math.random() * 150000 + 50000),
       expenses: Math.floor(Math.random() * 100000 + 30000),
@@ -179,7 +183,7 @@ export default function ProjectDashboard() {
           rows={yearsRows(
             "pnl",
             projectYears,
-            tableData.pnl,
+            pnls,
             params.projectId as string
           )}
           summary
@@ -324,7 +328,7 @@ function yearsRows(
       const { updateInvestment } = useInvestmentStore.getState();
       updateInvestment(year, "period", value);
     };
-
+    console.log(rowData);
     return [
       year,
       <div key={`income-${year}`} className="flex items-center gap-2">
@@ -348,7 +352,9 @@ function yearsRows(
             size="icon"
             className="h-6 w-6 text-gray-500 hover:text-gray-700"
           >
-            🖊️
+            <Link href={`/project/${projectId}/pnl/${rowData.id}/income`}>
+              🖊️
+            </Link>
           </Button>
         )}
       </div>,
@@ -373,7 +379,9 @@ function yearsRows(
             size="icon"
             className="h-6 w-6 text-gray-500 hover:text-gray-700"
           >
-            🖊️
+            <Link href={`/project/${projectId}/pnl/${rowData.id}/income`}>
+              🖊️
+            </Link>
           </Button>
         )}
       </div>,
