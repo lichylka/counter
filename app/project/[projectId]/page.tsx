@@ -352,7 +352,7 @@ function yearsRows(
             size="icon"
             className="h-6 w-6 text-gray-500 hover:text-gray-700"
           >
-            <Link href={`/project/${projectId}/pnl/${rowData.id}/income`}>
+            <Link href={`/project/${projectId}/income/${rowData.id}`}>
               🖊️
             </Link>
           </Button>
@@ -379,7 +379,7 @@ function yearsRows(
             size="icon"
             className="h-6 w-6 text-gray-500 hover:text-gray-700"
           >
-            <Link href={`/project/${projectId}/pnl/${rowData.id}/income`}>
+            <Link href={`/project/${projectId}/expenses/${rowData.id}`}>
               🖊️
             </Link>
           </Button>
