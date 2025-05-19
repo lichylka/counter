@@ -1,26 +1,39 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Search, Download, Trash2, RefreshCcw } from "lucide-react";
 import { Project } from "@/types/dashboard";
+import { useRouter } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface ProjectsTableProps {
-  projects: Project[];
   onEdit: (project: Project) => void;
   onView: (id: string) => void;
   onDownload: (id: string) => void;
   onDelete: (id: string) => void;
   onCreate: () => void;
+  userId: string;
 }
 
 export function ProjectsTable({
-  projects,
-  onEdit,
   onView,
   onDownload,
   onDelete,
-  onCreate
+  onCreate,
+  userId,
 }: ProjectsTableProps) {
+  const router = useRouter();
+  // const user = useQuery(api.users.getById, { id: userId });
+  // console.log(userId)
+  // console.log(user)
+  const projects = useQuery(api.projects.getAll, {
+    userId: userId,
+  });
+  console.log(projects);
+  if (!projects) return null;
+  // return null;
   return (
     <Card>
       <CardContent className="pt-6">
@@ -37,42 +50,51 @@ export function ProjectsTable({
             </thead>
             <tbody>
               {projects.map((project) => (
-                <tr key={project.id} className="border-b">
-                  <td className="py-2">{project.name}</td>
+                <tr key={project._id} className="border-b">
+                  <td
+                    className="py-2"
+                    onClick={() => router.push(`/project/${project._id}`)}
+                  >
+                    {project.name}
+                  </td>
                   <td>
-                    <Badge variant={project.status === "active" ? "default" : "secondary"}>
+                    <Badge
+                      variant={
+                        project.status === "active" ? "default" : "secondary"
+                      }
+                    >
                       {project.status === "active" ? "Активний" : "Архівований"}
                     </Badge>
                   </td>
-                  <td>{project.lastUpdated}</td>
+                  <td>{/* project.lastUpdate d*/}</td>
                   <td className="flex gap-2">
                     {project.status === "active" ? (
                       <>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onEdit(project)}
+                          // onClick={() => onEdit(project)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onView(project.id)}
+                          onClick={() => onView(project._id)}
                         >
                           <Search className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onDownload(project.id)}
+                          onClick={() => onDownload(project._id)}
                         >
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onDelete(project.id)}
+                          onClick={() => onDelete(project._id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -82,14 +104,14 @@ export function ProjectsTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onView(project.id)}
+                          onClick={() => onView(project._id)}
                         >
                           <Search className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onDownload(project.id)}
+                          onClick={() => onDownload(project._id)}
                         >
                           <Download className="h-4 w-4" />
                         </Button>

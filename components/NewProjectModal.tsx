@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -16,94 +16,94 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-
-interface ProjectFormData {
-  name: string;
-  status: 'active' | 'archived';
-  planStart: string;
-  planEnd: string;
-  salesStart: string;
-  description: string;
-}
+import { CreateProjectType } from "@/types/project.types";
+import { Project } from "@/types/dashboard";
 
 interface NewProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: ProjectFormData) => void;
-  initialData?: ProjectFormData | null;
+  onSave: (data: CreateProjectType) => void;
+  initialData?: Project | null;
   quickMode?: boolean;
+  userId: string;
 }
 
-export default function NewProjectModal({ 
-  isOpen, 
-  onClose, 
-  onSave, 
-  initialData,
-  quickMode = false 
+export default function NewProjectModal({
+  isOpen,
+  onClose,
+  onSave,
+  // initialData,
+  quickMode = false,
+  userId,
 }: NewProjectModalProps) {
-  const [form, setForm] = useState<ProjectFormData>({
-    name: '',
-    status: 'active',
-    planStart: '',
-    planEnd: '',
-    salesStart: '',
-    description: '',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateProjectType>({
+    defaultValues: {
+      name: "",
+      status: "active",
+      start_date: new Date().toISOString().split("T")[0],
+      period_plan: 0,
+      sales_start: "",
+      type: "Бізнес-план",
+      user_id: userId,
+    },
   });
 
-  useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
-    } else {
-      // Set default values for new projects
-      setForm({
-        name: '',
-        status: 'active',
-        planStart: new Date().toISOString().split('T')[0], // Today as default
-        planEnd: '',
-        salesStart: '',
-        description: '',
-      });
-    }
-  }, [initialData, isOpen]);
+  // useEffect(() => {
+  //   if (initialData) {
+  //     Object.entries(initialData).forEach(([key, value]) => {
+  //       setValue(key as keyof CreateProjectType, value);
+  //     });
+  //   } else {
+  //     reset({
+  //       name: "",
+  //       status: "active",
+  //       start_date: new Date().toISOString().split("T")[0],
+  //       period_plan: 0,
+  //       sales_start: "",
+  //       type: "",
+  //       user_id: userId,
+  //       created_at: new Date().toISOString(),
+  //     });
+  //   }
+  // }, [initialData, isOpen, reset, setValue, userId]);
 
-  const handleChange = (name: string, value: string) => {
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = () => {
-    onSave(form);
+  const onSubmit = (data: CreateProjectType) => {
+    onSave(data);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={quickMode ? "sm:max-w-[500px]" : "sm:max-w-[600px]"}>
+      <DialogContent
+        className={quickMode ? "sm:max-w-[500px]" : "sm:max-w-[600px]"}
+      >
         <DialogHeader>
           <DialogTitle>
             {quickMode ? "Новий проєкт" : "Створити новий проєкт"}
           </DialogTitle>
-         
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="name">Назва проєкту</Label>
             <Input
               id="name"
               placeholder="Вкажіть назву проєкту"
-              value={form.name}
-              onChange={(e) => handleChange('name', e.target.value)}
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
+            )}
           </div>
 
           {!quickMode && (
             <div className="space-y-2">
               <Label htmlFor="status">Статус</Label>
-              <Select
-                value={form.status}
-                onValueChange={(value) => handleChange('status', value)}
-              >
+              <Select {...register("status")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Оберіть статус" />
                 </SelectTrigger>
@@ -118,84 +118,59 @@ export default function NewProjectModal({
           {!quickMode && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="planStart">Початок планування</Label>
+                <Label htmlFor="start_date">Початок планування</Label>
                 <Input
-                  id="planStart"
+                  id="start_date"
                   type="date"
-                  value={form.planStart}
-                  onChange={(e) => handleChange('planStart', e.target.value)}
+                  {...register("start_date")}
                 />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="planEnd">Кінець планування</Label>
-                <Input
-                  id="planEnd"
-                  type="date"
-                  value={form.planEnd}
-                  onChange={(e) => handleChange('planEnd', e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="salesStart">Початок продажів</Label>
-                <Input
-                  id="salesStart"
-                  type="date"
-                  value={form.salesStart}
-                  onChange={(e) => handleChange('salesStart', e.target.value)}
-                />
+                {errors.start_date && (
+                  <p className="text-sm text-red-500">
+                    {errors.start_date.message}
+                  </p>
+                )}
               </div>
             </div>
           )}
 
-          {quickMode && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="planEnd">Кінець періоду планування</Label>
-                <Input
-                  id="planEnd"
-                  type="date"
-                  placeholder="Вкажіть період планування"
-                  value={form.planEnd}
-                  onChange={(e) => handleChange('planEnd', e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="salesStart">Початок продажів</Label>
-                <Input
-                  id="salesStart"
-                  type="date"
-                  placeholder="Вкажіть дату початку продажів"
-                  value={form.salesStart}
-                  onChange={(e) => handleChange('salesStart', e.target.value)}
-                />
-              </div>
-            </>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="period_plan">Період планування</Label>
+            <Select {...register("period_plan")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Оберіть період планування" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 рік</SelectItem>
+                <SelectItem value="2">2 роки</SelectItem>
+                <SelectItem value="3">3 роки</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.period_plan && (
+              <p className="text-sm text-red-500">
+                {errors.period_plan.message}
+              </p>
+            )}
+          </div>
 
-          {!quickMode && (
-            <div className="space-y-2">
-              <Label htmlFor="description">Опис (необов&apos;язково)</Label>
-              <Textarea
-                id="description"
-                value={form.description}
-                onChange={(e) => handleChange('description', e.target.value)}
-                rows={3}
-              />
-            </div>
-          )}
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="sales_start">Початок продажів</Label>
+            <Input id="sales_start" type="date" {...register("sales_start")} />
+            {errors.sales_start && (
+              <p className="text-sm text-red-500">
+                {errors.sales_start.message}
+              </p>
+            )}
+          </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {quickMode ? "Відмінити" : "Скасувати"}
-          </Button>
-          <Button onClick={handleSubmit}>
-            {quickMode ? "Зберегти" : "💾 Зберегти"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              {quickMode ? "Відмінити" : "Скасувати"}
+            </Button>
+            <Button type="submit">
+              {quickMode ? "Зберегти" : "💾 Зберегти"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

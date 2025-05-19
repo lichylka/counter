@@ -22,9 +22,9 @@ export default function ProjectDashboard() {
   if (!params.projectId) {
     throw new Error("Project ID is not provided");
   }
-  const { investments, setInvestments } = useInvestmentStore();
+  const { setInvestments } = useInvestmentStore();
   const { pnls, setPnLs } = usePnLStore();
-  const [documents, setDocuments] = useState<string[]>([]);
+  // const [ setDocuments] = useState<string[]>([]);
   const [projectData] = useState({
     name: "Фасування горіхів",
     startDate: "01.05.2025",
@@ -78,7 +78,7 @@ export default function ProjectDashboard() {
     });
 
     // Load documents
-    setDocuments(["Бізнес-план.pdf", "CashFlow.xlsx", "Стратегія.docx"]);
+    // setDocuments(["Бізнес-план.pdf", "CashFlow.xlsx", "Стратегія.docx"]);
   }, [params.projectId, setInvestments, setPnLs]);
 
   // Generate data functions
@@ -157,7 +157,7 @@ export default function ProjectDashboard() {
       </header>
 
       {/* Основні таблиці */}
-      <Card className="p-4">
+      {/* <Card className="p-4">
         <TableSection
           title="Інвестиції та кредити"
           columns={[
@@ -174,7 +174,7 @@ export default function ProjectDashboard() {
             params.projectId as string
           )}
         />
-      </Card>
+      </Card> */}
 
       <Card className="p-4">
         <TableSection
@@ -205,7 +205,7 @@ export default function ProjectDashboard() {
         />
       </Card>
 
-      <Card className="p-4">
+      {/* <Card className="p-4">
         <TableSection
           title="Баланс"
           columns={[
@@ -218,7 +218,7 @@ export default function ProjectDashboard() {
           rows={balanceRows(projectYears, tableData.balance)}
           summary
         />
-      </Card>
+      </Card> */}
 
       {/* AI-помічник */}
       <Card className="p-6">
@@ -231,7 +231,7 @@ export default function ProjectDashboard() {
       </Card>
 
       {/* Документи */}
-      <Card className="p-6">
+      {/* <Card className="p-6">
         <h2 className="text-lg font-semibold mb-4">📚 Документи</h2>
         <ul className="list-disc list-inside mb-4 space-y-2">
           {documents.map((doc, idx) => (
@@ -244,7 +244,7 @@ export default function ProjectDashboard() {
           <Button variant="outline">⬇️ Завантажити</Button>
           <Button variant="outline">📤 Імпортувати</Button>
         </div>
-      </Card>
+      </Card> */}
 
       {/* Футер */}
       <footer className="bg-gray-800 text-white py-4 text-center rounded-lg text-sm">
@@ -427,25 +427,25 @@ function cashFlowRows(years: string[], data: any[] = []) {
   });
 }
 
-function balanceRows(years: string[], data: any[] = []) {
-  return years.map((year, index) => {
-    const rowData = data[index] || { assets: 0, liabilities: 0, equity: 0 };
+// function balanceRows(years: string[], data: any[] = []) {
+//   return years.map((year, index) => {
+//     const rowData = data[index] || { assets: 0, liabilities: 0, equity: 0 };
 
-    return [
-      year,
-      `${rowData.assets}`,
-      `${rowData.liabilities}`,
-      `${rowData.equity}`,
-      <Select key={`select-bal-${year}`} defaultValue="yearly">
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder="Порічно" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="yearly">Порічно</SelectItem>
-          <SelectItem value="quarterly">Поквартально</SelectItem>
-          <SelectItem value="monthly">Помісячно</SelectItem>
-        </SelectContent>
-      </Select>,
-    ];
-  });
-}
+//     return [
+//       year,
+//       `${rowData.assets}`,
+//       `${rowData.liabilities}`,
+//       `${rowData.equity}`,
+//       <Select key={`select-bal-${year}`} defaultValue="yearly">
+//         <SelectTrigger className="w-[120px]">
+//           <SelectValue placeholder="Порічно" />
+//         </SelectTrigger>
+//         <SelectContent>
+//           <SelectItem value="yearly">Порічно</SelectItem>
+//           <SelectItem value="quarterly">Поквартально</SelectItem>
+//           <SelectItem value="monthly">Помісячно</SelectItem>
+//         </SelectContent>
+//       </Select>,
+//     ];
+//   });
+// }
