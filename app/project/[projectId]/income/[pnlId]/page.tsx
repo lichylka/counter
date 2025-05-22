@@ -1,140 +1,234 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useParams } from "next/navigation";
+import { useInvestmentStore } from "@/store/investmentStore";
+import EditValueModal from "@/components/investments/EditValueModal";
+import { Todo } from "@/types/todo.types";
+import { usePnLStore } from "@/store/pnlStore";
 
-type IncomeItem = {
-id: number;
-name: string;
-unit: string;
-quantity: number;
-price: number;
-type: string;
-period: string;
-};
+const incomeList = [{ name: "name", period: 2, price: 1, quantity: 1 }];
 
-export default function IncomePage() {
-const [incomeList, setIncomeList] = useState<IncomeItem[]>([]);
-const [aiPrompt, setAiPrompt] = useState("");
+export default function InvestmentsDetailPage() {
+  const params = useParams();
+  const { pnlId, type } = params;
+  // const pageType = type == "income" ? "доходи" : "витрати";
+  const { pnls } = usePnLStore();
 
-const handleAddIncome = () => {
-const newItem: IncomeItem = {
-id: Date.now(),
-name: "Новий дохід",
-unit: "кг",
-quantity: 100,
-price: 50,
-type: "Продукція",
-period: "2025-06",
-};
-setIncomeList([...incomeList, newItem]);
-};
+  // Find the specific investment data
+  const pnl = pnls.find((inv: Todo) => inv.id === pnlId);
 
-const handleAIQuery = async () => {
-// TODO: Запит до API OpenAI
-const mockAIResponse: IncomeItem[] = [
-{
-id: Date.now(),
-name: "Полуниця",
-unit: "кг",
-quantity: 5000,
-price: 70,
-type: "Продукція",
-period: "2025-06",
-},
-];
-setIncomeList([...incomeList, ...mockAIResponse]);
-};
+  // Get period data structure based on investment period
+  const getPeriodData = () => {
+    switch (pnl?.period || "Порічно") {
+      case "Помісячно":
+        return [
+          { name: "Січень", value: "0", editable: true },
+          { name: "Лютий", value: "0", editable: true },
+          { name: "Березень", value: "0", editable: true },
+          { name: "Q1 Підсумок", value: "0", editable: false },
+          { name: "Квітень", value: "0", editable: true },
+          { name: "Травень", value: "0", editable: true },
+          { name: "Червень", value: "0", editable: true },
+          { name: "Q2 Підсумок", value: "0", editable: false },
+          { name: "Липень", value: "0", editable: true },
+          { name: "Серпень", value: "0", editable: true },
+          { name: "Вересень", value: "0", editable: true },
+          { name: "Q3 Підсумок", value: "0", editable: false },
+          { name: "Жовтень", value: "0", editable: true },
+          { name: "Листопад", value: "0", editable: true },
+          { name: "Грудень", value: "0", editable: true },
+          { name: "Q4 Підсумок", value: "0", editable: false },
+          { name: "ЗА РІК", value: "0", editable: false },
+        ];
+      case "Поквартально":
+        return [
+          { name: "I квартал", value: "0", editable: true },
+          { name: "II квартал", value: "0", editable: true },
+          { name: "III квартал", value: "0", editable: true },
+          { name: "IV квартал", value: "0", editable: true },
+          { name: "ЗА РІК", value: "0", editable: false },
+        ];
+      case "Порічно":
+      default:
+        return [
+          { name: `${pnl?.year || ""} рік`, value: "0", editable: true },
+          { name: "ЗА РІК", value: "0", editable: false },
+        ];
+    }
+  };
 
-return (
-<main className="max-w-5xl mx-auto px-4 py-10 space-y-8">
-<h1 className="text-3xl font-bold">Доходи проєкту: (назва проекту)</h1>
+  // Calculate totals based on period type
+  const calculateTotals = (periodData: Todo) => {
+    switch (pnl?.period || "Порічно") {
+      case "Помісячно":
+        // ... existing code for monthly calculations ...
+        return {
+          yearTotal: periodData
+            .slice(0, -1)
+            .reduce(
+              (sum: Todo, m: Todo) =>
+                !m.name.includes("Підсумок")
+                  ? sum + (Number(m.value) || 0)
+                  : sum,
+              0
+            ),
+        };
+      case "Поквартально":
+        return {
+          yearTotal: periodData
+            .slice(0, -1)
+            .reduce((sum: Todo, m: Todo) => sum + (Number(m.value) || 0), 0),
+        };
+      case "Порічно":
+      default:
+        return {
+          yearTotal: Number(periodData[0].value) || 0,
+        };
+    }
+  };
 
-{/* 🔹 Таблиця періодів */}
-<section>
-<h2 className="text-xl font-semibold mb-2">Доходи за період</h2>
-<table className="w-full table-auto border">
-<thead>
-<tr className="bg-gray-100">
-<th className="border px-4 py-2">Період</th>
-<th className="border px-4 py-2">Сума доходу</th>
-<th className="border px-4 py-2">Дії</th>
-</tr>
-</thead>
-<tbody>
-{Array.from(
-new Set(incomeList.map((item) => item.period))
-).map((period) => (
-<tr key={period}>
-<td className="border px-4 py-2">{period}</td>
-<td className="border px-4 py-2">
-{incomeList
-.filter((i) => i.period === period)
-.reduce((sum, i) => sum + i.price * i.quantity, 0)}{" "}
-грн
-</td>
-</tr>
-))}
-</tbody>
-</table>
-</section>
+  const [periodData, setPeriodData] = React.useState({
+    year: pnl?.year || "",
+    period: pnl?.period || "Порічно",
+    periods: getPeriodData(),
+  });
 
-{/* 🔹 Таблиця доходів */}
-<section>
-<h2 className="text-xl font-semibold mb-2">Деталізація доходів</h2>
-<table className="w-full table-auto border text-sm">
-<thead className="bg-gray-100">
-<tr>
-<th className="border px-2 py-1">Назва</th>
-<th className="border px-2 py-1">Од. виміру</th>
-<th className="border px-2 py-1">Кількість</th>
-<th className="border px-2 py-1">Ціна</th>
-<th className="border px-2 py-1">Сума</th>
-<th className="border px-2 py-1">Тип</th>
-</tr>
-</thead>
-<tbody>
-{incomeList.map((item) => (
-<tr key={item.id}>
-<td className="border px-2 py-1">{item.name}</td>
-<td className="border px-2 py-1">{item.unit}</td>
-<td className="border px-2 py-1">{item.quantity}</td>
-<td className="border px-2 py-1">{item.price}</td>
-<td className="border px-2 py-1">
-{item.quantity * item.price}
-</td>
-<td className="border px-2 py-1">{item.type}</td>
-<td className="border px-2 py-1">{item.period}</td>
-</tr>
-))}
-</tbody>
-</table>
-</section>
+  // Function to handle editing of values
+  const [editModalState, setEditModalState] = React.useState({
+    isOpen: false,
+    index: -1,
+    value: "",
+    periodName: "",
+  });
 
-{/* 🔹 Кнопка додавання вручну */}
-<button
-onClick={handleAddIncome}
-className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
->
-➕ Додати дохід вручну
-</button>
+  const handleEdit = (index: number) => {
+    setEditModalState({
+      isOpen: true,
+      index,
+      value: periodData.periods[index].value,
+      periodName: periodData.periods[index].name,
+    });
+  };
 
-{/* 🔹 AI-помічник */}
-<section>
-<h2 className="text-xl font-semibold mb-2 mt-6">AI-помічник</h2>
-<textarea
-value={aiPrompt}
-onChange={(e) => setAiPrompt(e.target.value)}
-placeholder="Опиши джерело доходу..."
-className="w-full border p-2 rounded mb-2"
-rows={3}
-/>
-<button
-onClick={handleAIQuery}
-className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
->
-🤖 Запитати у AI
-</button>
-</section>
-</main>
-);
+  const handleSaveEdit = (newValue: string) => {
+    const updatedPeriods = [...periodData.periods];
+    updatedPeriods[editModalState.index] = {
+      ...updatedPeriods[editModalState.index],
+      value: newValue,
+    };
+
+    // Update the total
+    const totals = calculateTotals(updatedPeriods);
+    updatedPeriods[updatedPeriods.length - 1].value =
+      totals.yearTotal.toString();
+
+    setPeriodData({ ...periodData, periods: updatedPeriods });
+  };
+
+  const handleCloseModal = () => {
+    setEditModalState((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  // Add the missing handleSave function
+  const handleSave = () => {
+    // Update the investment in the store
+    if (pnl && type) {
+      const { updateInvestment } = useInvestmentStore.getState();
+      const fieldToUpdate = type === "income" ? "income" : "expenses";
+      const totalValue = Number(
+        periodData.periods[periodData.periods.length - 1].value
+      );
+
+      updateInvestment(pnl.year, fieldToUpdate, totalValue);
+    }
+
+    // You might want to add navigation back to the project page or show a success message
+  };
+
+  return (
+    <div className="p-6 space-y-6 max-w-5xl mx-auto">
+      <main className="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Доходи проєкту: {incomeList.length > 0 ? incomeList[0].name : ""}
+            </h1>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href={`/project/${params.projectId}`}>
+              🔙 Назад до проєкту
+            </Link>
+          </Button>
+        </header>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                      Період
+                    </th>
+                    <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                      Сума
+                    </th>
+                    <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                      Дії
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {Array.from(
+                    new Set(incomeList.map((item) => item.period))
+                  ).map((period) => (
+                    <tr key={period} className="hover:bg-gray-50">
+                      <td className="border border-gray-200 px-4 py-2">
+                        {period}
+                      </td>
+                      <td className="border border-gray-200 px-4 py-2">
+                        {incomeList
+                          .filter((i) => i.period === period)
+                          .reduce(
+                            (sum, i) => sum + i.price * i.quantity,
+                            0
+                          )}{" "}
+                        грн
+                      </td>
+                      <td className="border border-gray-200 px-4 py-2">
+                        <Button
+                          variant="link"
+                          className="text-purple-600 p-0 h-auto"
+                          onClick={() => handleEdit(period)}
+                        >
+                          редагувати
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end space-x-4 mt-6">
+          <Button variant="outline">Експорт в Excel</Button>
+          <Button onClick={handleSave}>Зберегти зміни</Button>
+        </div>
+      </main>
+
+      <EditValueModal
+        isOpen={editModalState.isOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveEdit}
+        initialValue={editModalState.value}
+        periodName={editModalState.periodName}
+      />
+    </div>
+  );
 }

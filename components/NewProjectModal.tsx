@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CreateProjectType } from "@/types/project.types";
 import { Project } from "@/types/dashboard";
+import { useEffect } from "react";
 
 interface NewProjectModalProps {
   isOpen: boolean;
@@ -40,6 +41,8 @@ export default function NewProjectModal({
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue
   } = useForm<CreateProjectType>({
     defaultValues: {
       name: "",
@@ -70,6 +73,13 @@ export default function NewProjectModal({
   //     });
   //   }
   // }, [initialData, isOpen, reset, setValue, userId]);
+
+  const formValues = watch();
+
+  // Log form updates
+  useEffect(() => {
+    console.log("Form values updated:", formValues);
+  }, [formValues]);
 
   const onSubmit = (data: CreateProjectType) => {
     onSave(data);
@@ -135,7 +145,13 @@ export default function NewProjectModal({
 
           <div className="space-y-2">
             <Label htmlFor="period_plan">Період планування</Label>
-            <Select {...register("period_plan")}>
+            <Select 
+             value={watch("period_plan")?.toString()}
+              onValueChange={(value) => {
+                // Update form value manually since Select component doesn't work with register
+                setValue("period_plan", parseInt(value));
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Оберіть період планування" />
               </SelectTrigger>

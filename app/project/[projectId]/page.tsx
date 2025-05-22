@@ -333,57 +333,9 @@ function yearsRows(
       year,
       <div key={`income-${year}`} className="flex items-center gap-2">
         {`${rowData.income}`}
-        {type === "investments" ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-gray-500 hover:text-gray-700"
-            asChild
-          >
-            <Link
-              href={`/project/${projectId}/investments/${rowData.id}/income`}
-            >
-              🖊️
-            </Link>
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-gray-500 hover:text-gray-700"
-          >
-            <Link href={`/project/${projectId}/income/${rowData.id}`}>
-              🖊️
-            </Link>
-          </Button>
-        )}
       </div>,
       <div key={`expenses-${year}`} className="flex items-center gap-2">
         {`${rowData.expenses}`}
-        {type === "investments" ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-gray-500 hover:text-gray-700"
-            asChild
-          >
-            <Link
-              href={`/project/${projectId}/investments/${rowData.id}/expenses`}
-            >
-              🖊️
-            </Link>
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-gray-500 hover:text-gray-700"
-          >
-            <Link href={`/project/${projectId}/expenses/${rowData.id}`}>
-              🖊️
-            </Link>
-          </Button>
-        )}
       </div>,
       `${rowData.balance}`,
       <Select
@@ -391,14 +343,9 @@ function yearsRows(
         defaultValue={rowData.period}
         onValueChange={handlePeriodChange}
       >
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder="Порічно" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Порічно">Порічно</SelectItem>
-          <SelectItem value="Поквартально">Поквартально</SelectItem>
-          <SelectItem value="Помісячно">Помісячно</SelectItem>
-        </SelectContent>
+        <Link href={`/project/${projectId}/year/${year}`}>
+          <Button>редагувати</Button>
+        </Link>
       </Select>,
     ];
   });
