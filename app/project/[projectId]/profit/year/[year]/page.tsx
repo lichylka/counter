@@ -30,7 +30,9 @@ export default function ProfitReportPage({
 
   return (
     <div className="p-6 space-y-8">
-      <Button>Назад</Button>
+      <Link href={`/project/${projectId}`}>
+        <Button>Назад</Button>
+      </Link>
       <h1 className="text-3xl font-bold">Звіт про прибутки (P&amp;L)</h1>
       <div className="text-sm text-gray-600">
         Проєкт: Фундук у пакуванні | Період: {year}
@@ -50,60 +52,17 @@ export default function ProfitReportPage({
               </tr>
             </thead>
             <tbody>
-              {showFullTable && (
-                <>
-                  <tr className="bg-gray-50 font-semibold">
-                    <td className="px-4 py-2 border">1 квартал</td>
-                    <td className="px-4 py-2 border">28,000</td>
-                    <td className="px-4 py-2 border">20,000</td>
-                    <td className="px-4 py-2 border">8,000</td>
-                    <td className="px-4 py-2 border">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleQuarter("Q1")}
-                      >
-                        {expandedQuarters["Q1"]
-                          ? "🔼 Згорнути"
-                          : "🔽 Розгорнути"}
-                      </Button>
-                    </td>
-                  </tr>
-                  {expandedQuarters["Q1"] && (
-                    <>
-                      <tr>
-                        <td className="px-4 py-2 border">Січень</td>
-                        <td className="px-4 py-2 border">10,000✏️</td>
-                        <td className="px-4 py-2 border">7,000✏️</td>
-                        <td className="px-4 py-2 border">3,000</td>
-                        <td className="px-4 py-2 border"></td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2 border">Лютий</td>
-                        <td className="px-4 py-2 border">
-                          <Link href={`/project/${projectId}/income/${2}`}>
-                            9,000✏️
-                          </Link>
-                        </td>
-                        <td className="px-4 py-2 border">
-                          <Link href={`/project/${projectId}/expenses/${2}`}>
-                            6,500✏️
-                          </Link>
-                        </td>
-                        <td className="px-4 py-2 border">2,500</td>
-                        <td className="px-4 py-2 border"></td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2 border">Березень</td>
-                        <td className="px-4 py-2 border">9,000✏️</td>
-                        <td className="px-4 py-2 border">6,500✏️</td>
-                        <td className="px-4 py-2 border">2,500</td>
-                        <td className="px-4 py-2 border"></td>
-                      </tr>
-                    </>
-                  )}
-                </>
-              )}
+              {showFullTable &&
+                ["Q1", "Q2", "Q3", "Q4"].map((quarter, i) => (
+                  <Quarter
+                    key={i}
+                    expandedQuarters={expandedQuarters}
+                    projectId={projectId}
+                    toggleQuarter={toggleQuarter}
+                    year={year}
+                    quarter={quarter as "Q1" | "Q2" | "Q3" | "Q4"}
+                  />
+                ))}
               <tr className="bg-green-100 font-bold">
                 <td className="px-4 py-2 border">РІК ({year})</td>
                 <td className="px-4 py-2 border">133,000</td>
@@ -141,5 +100,99 @@ export default function ProfitReportPage({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function Quarter({
+  toggleQuarter,
+  expandedQuarters,
+  projectId,
+  year,
+  quarter,
+}: {
+  toggleQuarter: (q: string) => void;
+  expandedQuarters: { [key: string]: boolean };
+  projectId: string;
+  year: string;
+  quarter: "Q1" | "Q2" | "Q3" | "Q4";
+}) {
+  const quarterData = {
+    Q1: {
+      name: "1 квартал",
+      value: [
+        { name: "Січень", id: 1 },
+        { name: "Лютий", id: 2 },
+        { name: "Березень", id: 3 },
+      ],
+    },
+    Q2: {
+      name: "2 квартал",
+      value: [
+        { name: "Квітень", id: 4 },
+        { name: "Травень", id: 5 },
+        { name: "Червент", id: 6 },
+      ],
+    },
+    Q3: {
+      name: "3 квартал",
+      value: [
+        { name: "Липень", id: 7 },
+        { name: "Серпень", id: 8 },
+        { name: "Вересень", id: 9 },
+      ],
+    },
+    Q4: {
+      name: "4 квартал",
+      value: [
+        { name: "Жовтень", id: 10 },
+        { name: "Листопад", id: 11 },
+        { name: "Грудень", id: 12 },
+      ],
+    },
+  };
+
+  return (
+    <>
+      <tr className="bg-gray-50 font-semibold">
+        <td className="px-4 py-2 border">{quarterData[quarter].name}</td>
+        <td className="px-4 py-2 border">28,000</td>
+        <td className="px-4 py-2 border">20,000</td>
+        <td className="px-4 py-2 border">8,000</td>
+        <td className="px-4 py-2 border">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => toggleQuarter(quarter)}
+          >
+            {expandedQuarters[quarter] ? "🔼 Згорнути" : "🔽 Розгорнути"}
+          </Button>
+        </td>
+      </tr>
+      {expandedQuarters[quarter] && (
+        <>
+          {quarterData[quarter].value.map((el) => (
+            <tr key={el.id}>
+              <td className="px-4 py-2 border">{el.name}</td>
+              <td className="px-4 py-2 border">
+                <Link
+                  href={`/project/${projectId}/profit/year/${year}/month/${el.id}/income`}
+                >
+                  10,000✏️
+                </Link>
+              </td>
+              <td className="px-4 py-2 border">
+                <Link
+                  href={`/project/${projectId}/profit/year/${year}/month/${el.id}/expenses`}
+                >
+                  7,000✏️
+                </Link>
+              </td>
+              <td className="px-4 py-2 border">3,000</td>
+              <td className="px-4 py-2 border"></td>
+            </tr>
+          ))}
+        </>
+      )}
+    </>
   );
 }

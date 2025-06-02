@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import React, { useState } from "react";
 
 type ExpenseItem = {
   id: number;
@@ -13,7 +15,9 @@ type ExpenseItem = {
   period: string;
 };
 
-export default function ExpensesPage() {
+type Props = { params: { projectId: string; year: string; month: string } };
+
+function PageContent({ params }: Props) {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [aiPrompt, setAiPrompt] = useState("");
 
@@ -50,9 +54,18 @@ export default function ExpensesPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
-      <h1 className="text-3xl font-bold">
-        💸 Витрати проєкту: (назва проекту)
-      </h1>
+      <header className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">
+          💸 Витрати проєкту: (назва проекту)
+        </h1>
+        <Button variant="outline" asChild>
+          <Link
+            href={`/project/${params.projectId}/profit/year/${params.year}`}
+          >
+            🔙 Назад до проєкту
+          </Link>
+        </Button>
+      </header>
 
       {/* 📅 Витрати за період */}
       <section>
@@ -156,3 +169,5 @@ export default function ExpensesPage() {
     </main>
   );
 }
+
+export default PageContent;

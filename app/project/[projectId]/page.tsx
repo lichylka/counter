@@ -343,7 +343,7 @@ function yearsRows(
         defaultValue={rowData.period}
         onValueChange={handlePeriodChange}
       >
-        <Link href={`/project/${projectId}/year/${year}`}>
+        <Link href={`/project/${projectId}/profit/year/${year}`}>
           <Button>редагувати</Button>
         </Link>
       </Select>,
