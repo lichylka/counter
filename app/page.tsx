@@ -112,7 +112,7 @@ export default function Home() {
         <Card className="max-w-2xl mx-auto mb-8 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 shadow-lg">
           <CardContent className="pt-6 text-center space-y-4">
             <h3 className="text-2xl font-semibold text-blue-800">
-              Бізнес-план
+              Фінансову модель 
             </h3>
             <div className="text-lg text-gray-600">
               <p>Професійна оцінка ефективності</p>
