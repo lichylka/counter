@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import { useInvestmentStore } from "@/store/investmentStore";
-import EditValueModal from "@/components/investments/EditValueModal";
+import EditValueModal from "@/components/EditValueModal";
 import { Todo } from "@/types/todo.types";
 
 export default function InvestmentsDetailPage() {
@@ -217,7 +217,6 @@ export default function InvestmentsDetailPage() {
         isOpen={editModalState.isOpen}
         onClose={handleCloseModal}
         onSave={handleSaveEdit}
-        initialValue={editModalState.value}
         periodName={editModalState.periodName}
       />
     </div>

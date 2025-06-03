@@ -1,62 +1,50 @@
 "use client";
-
+import EditValueModalSecondStep from "@/components/EditValueModalSecondStep";
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import React, { useState } from "react";
-
-type ExpenseItem = {
-  id: number;
-  name: string;
-  unit: string;
-  quantity: number;
-  price: number;
-  category: string;
-  type: "Постійні" | "Змінні: Прямі" | "Змінні: Накладні";
-  period: string;
-};
+import { useMutation, useQuery } from "convex/react";
+;
 
 type Props = { params: { projectId: string; year: string; month: string } };
 
 function PageContent({ params }: Props) {
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+  const expenses =
+    useQuery(api.expenses.getExpensesForProjectWithPeriod, {
+      projectId: params.projectId,
+      prediod: params.month,
+    })?.reverse() ?? [];
+  const addExpense = useMutation(api.expenses.addExpense);
+  const project = useQuery(api.projects.getById, {
+    id: params.projectId as any,
+  });
   const [aiPrompt, setAiPrompt] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleAddExpense = () => {
-    const newItem: ExpenseItem = {
-      id: Date.now(),
-      name: "Нова витрата",
-      unit: "кг",
-      quantity: 100,
-      price: 50,
-      category: "Матеріальні",
-      type: "Змінні: Прямі",
-      period: "2025-06",
-    };
-    setExpenses([...expenses, newItem]);
+    setIsOpen(true);
   };
 
-  const handleAIQuery = async () => {
-    // TODO: інтеграція з AI
-    const mockResponse: ExpenseItem[] = [
-      {
-        id: Date.now(),
-        name: "Пакування",
-        unit: "шт",
-        quantity: 10000,
-        price: 1.5,
-        category: "Матеріальні",
-        type: "Змінні: Накладні",
-        period: "2025-06",
-      },
-    ];
-    setExpenses([...expenses, ...mockResponse]);
+  const handleSaveNewRow = async (
+    expenseData: Omit<
+      typeof api.expenses.addExpense._args,
+      "period" | "projectId"
+    >
+  ) => {
+    await addExpense({
+      ...expenseData,
+      period: params.month,
+      projectId: params.projectId,
+    });
+    setIsOpen(false);
   };
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">
-          💸 Витрати проєкту: (назва проекту)
+          💸 Витрати проєкту: {project?.name}
         </h1>
         <Button variant="outline" asChild>
           <Link
@@ -69,7 +57,23 @@ function PageContent({ params }: Props) {
 
       {/* 📅 Витрати за період */}
       <section>
-        <h2 className="text-xl font-semibold mb-2">Витрати за період</h2>
+        <h2 className="text-xl font-semibold mb-2">
+          Витрати за період:{" "}
+          {[
+            "Січень",
+            "Лютий",
+            "Березень",
+            "Квітень",
+            "Травень",
+            "Червень",
+            "Липень",
+            "Серпень",
+            "Вересень",
+            "Жовтень",
+            "Листопад",
+            "Грудень",
+          ][Number(params.month) - 1] || params.month}
+        </h2>
         <table className="w-full border table-auto text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -86,7 +90,22 @@ function PageContent({ params }: Props) {
                   .reduce((sum, e) => sum + e.price * e.quantity, 0);
                 return (
                   <tr key={period}>
-                    <td className="border px-4 py-2">{period}</td>
+                    <td className="border px-4 py-2">
+                      {[
+                        "Січень",
+                        "Лютий",
+                        "Березень",
+                        "Квітень",
+                        "Травень",
+                        "Червень",
+                        "Липень",
+                        "Серпень",
+                        "Вересень",
+                        "Жовтень",
+                        "Листопад",
+                        "Грудень",
+                      ][Number(period) - 1] || period}
+                    </td>
                     <td className="border px-4 py-2">{total.toFixed(2)} грн</td>
                     <td className="border px-4 py-2">
                       <button className="text-blue-600 hover:underline">
@@ -121,17 +140,23 @@ function PageContent({ params }: Props) {
               </thead>
               <tbody>
                 {expenses
-                  .filter((e) => e.type === type)
+                  .filter((e) => e.expense_item?.type === type)
                   .map((item) => (
-                    <tr key={item.id}>
-                      <td className="border px-2 py-1">{item.name}</td>
-                      <td className="border px-2 py-1">{item.unit}</td>
+                    <tr key={item._id}>
+                      <td className="border px-2 py-1">
+                        {item.expense_item?.name}
+                      </td>
+                      <td className="border px-2 py-1">
+                        {item.expense_item?.unit}
+                      </td>
                       <td className="border px-2 py-1">{item.quantity}</td>
                       <td className="border px-2 py-1">{item.price}</td>
                       <td className="border px-2 py-1">
                         {(item.quantity * item.price).toFixed(2)}
                       </td>
-                      <td className="border px-2 py-1">{item.category}</td>
+                      <td className="border px-2 py-1">
+                        {item.expense_item?.category}
+                      </td>
                       <td className="border px-2 py-1">{item.period}</td>
                     </tr>
                   ))}
@@ -160,12 +185,17 @@ function PageContent({ params }: Props) {
           rows={3}
         />
         <button
-          onClick={handleAIQuery}
+          // onClick={handleAIQuery}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           🤖 Запитати у AI
         </button>
       </section>
+      <EditValueModalSecondStep
+        isOpen={isOpen}
+        handleSaveNewRow={handleSaveNewRow}
+        setIsOpen={setIsOpen}
+      />
     </main>
   );
 }
