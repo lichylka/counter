@@ -5,11 +5,14 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-;
+import { Doc } from "@/convex/_generated/dataModel";
+type Props = {
+  params: { projectId: string; year: string; month: string };
+  periodMonth: Doc<"periods_months">;
+  reportMonth: Doc<"reports_months">;
+};
 
-type Props = { params: { projectId: string; year: string; month: string } };
-
-function PageContent({ params }: Props) {
+function PageContent({ params, reportMonth }: Props) {
   const expenses =
     useQuery(api.expenses.getExpensesForProjectWithPeriod, {
       projectId: params.projectId,
@@ -19,6 +22,7 @@ function PageContent({ params }: Props) {
   const project = useQuery(api.projects.getById, {
     id: params.projectId as any,
   });
+
   const [aiPrompt, setAiPrompt] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -72,7 +76,8 @@ function PageContent({ params }: Props) {
             "Жовтень",
             "Листопад",
             "Грудень",
-          ][Number(params.month) - 1] || params.month}
+          ][Number(params.month) - 1] || params.month}{" "}
+          {params.year}
         </h2>
         <table className="w-full border table-auto text-sm">
           <thead className="bg-gray-100">
@@ -104,7 +109,8 @@ function PageContent({ params }: Props) {
                         "Жовтень",
                         "Листопад",
                         "Грудень",
-                      ][Number(period) - 1] || period}
+                      ][Number(period) - 1] || period}{" "}
+                      {params.year}
                     </td>
                     <td className="border px-4 py-2">{total.toFixed(2)} грн</td>
                     <td className="border px-4 py-2">
@@ -152,12 +158,11 @@ function PageContent({ params }: Props) {
                       <td className="border px-2 py-1">{item.quantity}</td>
                       <td className="border px-2 py-1">{item.price}</td>
                       <td className="border px-2 py-1">
-                        {(item.quantity * item.price).toFixed(2)}
+                        {reportMonth.expenses_total}
                       </td>
                       <td className="border px-2 py-1">
                         {item.expense_item?.category}
                       </td>
-                      <td className="border px-2 py-1">{item.period}</td>
                     </tr>
                   ))}
               </tbody>
@@ -195,6 +200,9 @@ function PageContent({ params }: Props) {
         isOpen={isOpen}
         handleSaveNewRow={handleSaveNewRow}
         setIsOpen={setIsOpen}
+        reports_months_id={reportMonth._id}
+        reports_quarters_id={reportMonth.report_quarters_id}
+        reports_years_id={reportMonth.report_years_id}
       />
     </main>
   );

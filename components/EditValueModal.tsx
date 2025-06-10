@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import EditValueModalSecondStep from "./EditValueModalSecondStep";
-import { api } from "@/convex/_generated/api";
 
 interface EditValueModalProps {
   isOpen: boolean;
@@ -21,14 +19,14 @@ interface TableRow {
 export default function EditValueModal({
   isOpen,
   onClose,
-  onSave,
+
   periodName,
 }: EditValueModalProps) {
-  const [rows, setRows] = useState<TableRow[]>([
+  const [rows] = useState<TableRow[]>([
     { name: "Продукт", unit: "шт", quantity: 2, price: 100, total: 200 },
   ]);
 
-  const [showAddRowModal, setShowAddRowModal] = useState(false);
+  const [, setShowAddRowModal] = useState(false);
 
   const calculateTotal = () => {
     return rows.reduce((sum, row) => sum + row.total, 0);
@@ -38,17 +36,17 @@ export default function EditValueModal({
     setShowAddRowModal(true);
   };
 
-  const handleSaveNewRow = (
-    newRow: Omit<typeof api.expenses.addExpense._args, "period" | "projectId">
-  ) => {
-    setRows([...rows, newRow] as any);
-    setShowAddRowModal(false);
-  };
+  // const handleSaveNewRow = (
+  //   newRow: Omit<typeof api.expenses.addExpense._args, "period" | "projectId">
+  // ) => {
+  //   setRows([...rows, newRow] as any);
+  //   setShowAddRowModal(false);
+  // };
 
-  const handleSave = () => {
-    onSave(calculateTotal().toString());
-    onClose();
-  };
+  // const handleSave = () => {
+  //   onSave(calculateTotal().toString());
+  //   onClose();
+  // };
 
   return (
     <>
@@ -109,7 +107,7 @@ export default function EditValueModal({
                 </button>
                 <button
                   className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-                  onClick={handleSave}
+                  // onClick={handleSave}
                 >
                   💾 Зберегти
                 </button>
@@ -119,13 +117,14 @@ export default function EditValueModal({
         </DialogContent>
       </Dialog>
 
-      {showAddRowModal && (
+      {/* {showAddRowModal && (
         <EditValueModalSecondStep
           handleSaveNewRow={handleSaveNewRow}
           isOpen={showAddRowModal}
           setIsOpen={setShowAddRowModal}
+          
         />
-      )}
+      )} */}
     </>
   );
 }

@@ -1,6 +1,6 @@
-import { Id } from './_generated/dataModel';
-import { mutation, query } from './_generated/server';
-import { v } from 'convex/values';
+import { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
 
 // Get all projects for a user
 export const getAll = query({
@@ -58,22 +58,22 @@ export const create = mutation({
       created_at: Date.now(),
       updated_at: Date.now(),
       generated_from: [],
-      aiinsights: null
+      aiinsights: null,
     });
 
     // Create years and track their IDs
-    const yearIds = new Map<number, Id<'periods_years'>>();
-
+    const yearIds = new Map<number, Id<"periods_years">>();
+    const reportYearIds = new Map<number, Id<"reports_years">>();
     for (let i = 0; i <= args.period_plan; i++) {
       const year = startDate.getFullYear() + i;
-      const yearId = await ctx.db.insert('periods_years', {
+      const yearId = await ctx.db.insert("periods_years", {
         project_id: projectId,
         year: year,
         index: i,
       });
       yearIds.set(year, yearId);
 
-      await ctx.db.insert('reports_years', {
+      const reportYearId = await ctx.db.insert("reports_years", {
         project_id: projectId,
         period_id: yearId,
         year: year,
@@ -85,21 +85,24 @@ export const create = mutation({
         cashflow_total: 0,
         aiinsights: {},
       });
+      reportYearIds.set(year, reportYearId);
     }
 
     // Create quarters and months
+    let quarterId: any;
+    let reportQuarterId: any;
     for (let i = 0; i < monthsCount; i++) {
       const currentDate = new Date(startDate);
       currentDate.setMonth(startDate.getMonth() + i);
 
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
-      const quarter = Math.floor(month / 3) + 1;
+      const quarter = Math.ceil((month + 1) / 3);
       const yearId = yearIds.get(year)!;
-      console.log(year, "yearId", yearId);
-
-      if (month % 3 === 0) {
-        const quarterId = await ctx.db.insert('periods_quarters', {
+      const reportYearId = reportYearIds.get(year)!;
+      if (month % 3 === 0 || !quarterId) {
+        console.log("create");
+        quarterId = await ctx.db.insert("periods_quarters", {
           project_id: projectId,
           year_id: yearId,
           year: year,
@@ -108,7 +111,7 @@ export const create = mutation({
         });
 
         // Create quarter report
-        await ctx.db.insert('reports_quarters', {
+        reportQuarterId = await ctx.db.insert("reports_quarters", {
           project_id: projectId,
           period_quarter_id: quarterId,
           period_year_id: yearId,
@@ -121,40 +124,43 @@ export const create = mutation({
           cashflow_outflow: 0,
           cashflow_total: 0,
           aiinsights: {},
-        });
-
-        // Create month
-        const monthId = await ctx.db.insert('periods_months', {
-          project_id: projectId,
-          year_id: yearId,
-          quarter_id: quarterId,
-          year: year,
-          quarter: `Q${quarter}` as "Q1" | "Q2" | "Q3" | "Q4",
-          index: i,
-          start_date: new Date(year, month, 1).toISOString(),
-          dateEnd: new Date(year, month + 1, 0).toISOString(),
-        });
-
-        // Create month report
-        await ctx.db.insert('reports_months', {
-          project_id: projectId,
-          period_month_id: monthId,
-          period_quarter_id: quarterId,
-          period_year_id: yearId,
-          period_label: `${month + 1}/${year}`,
-          income_total: 0,
-          expenses_total: 0,
-          profit_total: 0,
-          cashflow_inflow: 0,
-          cashflow_outflow: 0,
-          cashflow_total: 0,
-          aiinsights: null,
+          report_years_id: reportYearId,
         });
       }
+      console.log("quarterId", quarterId);
+      // Create month
+      const monthId = await ctx.db.insert("periods_months", {
+        project_id: projectId,
+        year_id: yearId,
+        quarter_id: quarterId,
+        year: year,
+        quarter: `Q${quarter}` as "Q1" | "Q2" | "Q3" | "Q4",
+        index: i,
+        start_date: new Date(year, month, 1).toISOString(),
+        dateEnd: new Date(year, month + 1, 0).toISOString(),
+      });
+
+      // Create month report
+      await ctx.db.insert("reports_months", {
+        project_id: projectId,
+        period_month_id: monthId,
+        period_quarter_id: quarterId,
+        period_year_id: yearId,
+        period_label: `${month + 1}/${year}`,
+        income_total: 0,
+        expenses_total: 0,
+        profit_total: 0,
+        cashflow_inflow: 0,
+        cashflow_outflow: 0,
+        cashflow_total: 0,
+        aiinsights: null,
+        report_quarters_id: reportQuarterId,
+        report_years_id: reportYearId,
+      });
     }
 
     return projectId;
-  }
+  },
 });
 
 // Update an existing project

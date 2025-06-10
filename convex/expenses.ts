@@ -15,6 +15,9 @@ export const addExpense = mutation({
     ),
     period: v.string(),
     projectId: v.string(),
+    reports_months_id: v.id("reports_months"),
+    reports_quarters_id: v.id("reports_quarters"),
+    reports_years_id: v.id("reports_years"),
   },
   handler: async (ctx, args) => {
     const expensesItemId = await ctx.db.insert("expense_items", {
@@ -24,12 +27,40 @@ export const addExpense = mutation({
       type: args.type,
       subtype: "",
     });
+
+    const total_expense = args.quantity * args.price;
+
+    const reportMonth = await ctx.db.get(args.reports_months_id);
+    if (!reportMonth) throw new Error("Report month not found");
+    await ctx.db.patch(args.reports_months_id, {
+      expenses_total: reportMonth.expenses_total + total_expense,
+      profit_total:
+        reportMonth.profit_total - (reportMonth.expenses_total + total_expense),
+    });
+
+    const reportQuarter = await ctx.db.get(reportMonth.report_quarters_id);
+    if (!reportQuarter) throw new Error("Report quarter not found");
+    await ctx.db.patch(args.reports_quarters_id, {
+      expenses_total: reportQuarter.expenses_total + total_expense,
+      profit_total:
+        reportQuarter.profit_total -
+        (reportQuarter.expenses_total + total_expense),
+    });
+
+    const reportYear = await ctx.db.get(reportMonth.report_years_id);
+    if (!reportYear) throw new Error("Report year not found");
+    await ctx.db.patch(args.reports_years_id, {
+      expenses_total: reportYear.expenses_total + total_expense,
+      profit_total:
+        reportYear.profit_total - (reportYear.expenses_total + total_expense),
+    });
+
     return await ctx.db.insert("expenses", {
       period: args.period,
       quantity: args.quantity,
       price: args.price,
       expense_item_id: expensesItemId,
-      total_expense: args.quantity * args.price,
+      total_expense: total_expense,
       //@ts-ignore
       project_id: args.projectId,
     });

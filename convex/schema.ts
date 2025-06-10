@@ -44,6 +44,7 @@ export default defineSchema({
     price: v.number(),
     total_expense: v.number(),
     period: v.string(),
+    periods_months_id: v.optional(v.id("periods_months")),
   }),
 
   profit: defineTable({
@@ -54,7 +55,6 @@ export default defineSchema({
     expenses: v.number(),
     closing_profit: v.number(),
   }),
-
 
   cashflow: defineTable({
     project_id: v.id("projects"),
@@ -84,16 +84,26 @@ export default defineSchema({
     project_id: v.id("projects"),
     year_id: v.id("periods_years"),
     year: v.number(),
-    quarter: v.union(v.literal("Q1"), v.literal("Q2"), v.literal("Q3"), v.literal("Q4")),
+    quarter: v.union(
+      v.literal("Q1"),
+      v.literal("Q2"),
+      v.literal("Q3"),
+      v.literal("Q4")
+    ),
     index: v.number(),
   }),
 
   periods_months: defineTable({
     project_id: v.id("projects"),
     year_id: v.id("periods_years"),
-    quarter_id: v.id('periods_quarters'),
+    quarter_id: v.id("periods_quarters"),
     year: v.number(),
-    quarter: v.union(v.literal("Q1"), v.literal("Q2"), v.literal("Q3"), v.literal("Q4")),
+    quarter: v.union(
+      v.literal("Q1"),
+      v.literal("Q2"),
+      v.literal("Q3"),
+      v.literal("Q4")
+    ),
     index: v.number(),
     start_date: v.string(),
     dateEnd: v.string(),
@@ -141,6 +151,7 @@ export default defineSchema({
     cashflow_outflow: v.number(),
     cashflow_total: v.number(),
     aiinsights: v.union(v.object({}), v.null()),
+    report_years_id: v.id("reports_years"),
   }),
 
   reports_months: defineTable({
@@ -156,5 +167,7 @@ export default defineSchema({
     cashflow_outflow: v.number(),
     cashflow_total: v.number(),
     aiinsights: v.union(v.object({}), v.null()),
+    report_quarters_id: v.id("reports_quarters"),
+    report_years_id: v.id("reports_years"),
   }),
 });

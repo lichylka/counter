@@ -13,6 +13,7 @@ import { api } from "@/convex/_generated/api";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Id } from "@/convex/_generated/dataModel";
 
 type Props = {
   isOpen: boolean;
@@ -20,6 +21,9 @@ type Props = {
   handleSaveNewRow: (
     row: Omit<typeof api.expenses.addExpense._args, "period" | "projectId">
   ) => void;
+  reports_months_id: Id<"reports_months">;
+  reports_quarters_id: Id<"reports_quarters">;
+  reports_years_id: Id<"reports_years">;
 };
 
 const formSchema = z.object({
@@ -37,6 +41,9 @@ function EditValueModalSecondStep({
   isOpen,
   setIsOpen,
   handleSaveNewRow,
+  reports_months_id,
+  reports_quarters_id,
+  reports_years_id,
 }: Props) {
   const {
     control,
@@ -62,6 +69,9 @@ function EditValueModalSecondStep({
         ...data,
         quantity: Number(data.quantity),
         price: Number(data.price),
+        reports_months_id,
+        reports_quarters_id,
+        reports_years_id,
       };
 
       handleSaveNewRow(formattedData);
