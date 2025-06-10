@@ -16,7 +16,7 @@ function PageContent({ params, reportMonth }: Props) {
   const expenses =
     useQuery(api.expenses.getExpensesForProjectWithPeriod, {
       projectId: params.projectId,
-      prediod: params.month,
+      period: params.month,
     })?.reverse() ?? [];
   const addExpense = useMutation(api.expenses.addExpense);
   const project = useQuery(api.projects.getById, {

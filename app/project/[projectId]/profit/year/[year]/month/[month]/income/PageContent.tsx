@@ -2,6 +2,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import AddIncomeModal from "@/components/AddIncomeModal";
+import { Doc } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 
 type IncomeItem = {
   id: number;
@@ -13,23 +17,37 @@ type IncomeItem = {
   period: string;
 };
 
-type Props = { params: { projectId: string; year: string; month: string } };
+type Props = {
+  params: { projectId: string; year: string; month: string };
+  reportMonth: Doc<"reports_months">;
+};
 
-function PageContent({ params }: Props) {
+function PageContent({ params, reportMonth }: Props) {
   const [incomeList, setIncomeList] = useState<IncomeItem[]>([]);
   const [aiPrompt, setAiPrompt] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const incomes =
+    useQuery(api.income.getIncomeForProjectWithPeriod, {
+      projectId: params.projectId,
+      period: params.month,
+    })?.reverse() ?? [];
+
+  const addIncome = useMutation(api.income.addIncome);
 
   const handleAddIncome = () => {
-    const newItem: IncomeItem = {
-      id: Date.now(),
-      name: "Новий дохід",
-      unit: "кг",
-      quantity: 100,
-      price: 50,
-      type: "Продукція",
-      period: "2025-06",
-    };
-    setIncomeList([...incomeList, newItem]);
+    setIsOpen(true);
+  };
+
+  const handleSaveNewRow = async (
+    incomeData: Omit<typeof api.income.addIncome._args, "period" | "projectId">
+  ) => {
+    await addIncome({
+      ...incomeData,
+      period: params.month,
+      projectId: params.projectId,
+    });
+    setIsOpen(false);
   };
 
   const handleAIQuery = async () => {
@@ -56,7 +74,9 @@ function PageContent({ params }: Props) {
             Доходи проєкту: (назва проекту)
           </h1>
           <Button variant="outline" asChild>
-            <Link href={`/project/${params.projectId}/profit/year/${params.year}`}>
+            <Link
+              href={`/project/${params.projectId}/profit/year/${params.year}`}
+            >
               🔙 Назад до проєкту
             </Link>
           </Button>
@@ -74,24 +94,18 @@ function PageContent({ params }: Props) {
               </tr>
             </thead>
             <tbody>
-              {Array.from(new Set(incomeList.map((item) => item.period))).map(
-                (period) => (
-                  <tr key={period}>
-                    <td className="border px-4 py-2">{period}</td>
-                    <td className="border px-4 py-2">
-                      {incomeList
-                        .filter((i) => i.period === period)
-                        .reduce((sum, i) => sum + i.price * i.quantity, 0)}{" "}
-                      грн
-                    </td>
-                    <td className="border px-4 py-2">
-                      <Button variant="link" className="text-purple-600">
-                        редагувати
-                      </Button>
-                    </td>
-                  </tr>
-                )
-              )}
+              <tr>
+                <td className="border px-4 py-2">{reportMonth.period_label}</td>
+                <td className="border px-4 py-2">
+                  {reportMonth.income_total}
+                  грн
+                </td>
+                <td className="border px-4 py-2">
+                  <Button variant="link" className="text-purple-600">
+                    редагувати
+                  </Button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </section>
@@ -112,16 +126,16 @@ function PageContent({ params }: Props) {
               </tr>
             </thead>
             <tbody>
-              {incomeList.map((item) => (
-                <tr key={item.id}>
-                  <td className="border px-2 py-1">{item.name}</td>
-                  <td className="border px-2 py-1">{item.unit}</td>
+              {incomes.map((item) => (
+                <tr key={item._id}>
+                  <td className="border px-2 py-1">{item.product?.name}</td>
+                  <td className="border px-2 py-1">{item.product?.unit}</td>
                   <td className="border px-2 py-1">{item.quantity}</td>
                   <td className="border px-2 py-1">{item.price}</td>
                   <td className="border px-2 py-1">
                     {item.quantity * item.price}
                   </td>
-                  <td className="border px-2 py-1">{item.type}</td>
+                  <td className="border px-2 py-1">{item.product?.type}</td>
                   <td className="border px-2 py-1">{item.period}</td>
                 </tr>
               ))}
@@ -160,6 +174,14 @@ function PageContent({ params }: Props) {
           <Button>Зберегти зміни</Button>
         </div>
       </main>
+      <AddIncomeModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSaveNewRow={handleSaveNewRow}
+        reports_months_id={reportMonth._id}
+        reports_quarters_id={reportMonth.report_quarters_id}
+        reports_years_id={reportMonth.report_years_id}
+      />
     </div>
   );
 }

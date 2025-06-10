@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as expenses from "../expenses.js";
+import type * as income from "../income.js";
 import type * as periodMonth from "../periodMonth.js";
 import type * as periodYear from "../periodYear.js";
 import type * as projects from "../projects.js";
@@ -31,6 +32,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   expenses: typeof expenses;
+  income: typeof income;
   periodMonth: typeof periodMonth;
   periodYear: typeof periodYear;
   projects: typeof projects;
