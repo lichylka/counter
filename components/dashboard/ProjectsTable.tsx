@@ -127,7 +127,7 @@ export function ProjectsTable({
           </table>
         </div>
         <div className="flex gap-4 mt-4">
-          <Button variant="outline" onClick={onCreate}>
+          <Button variant="outline" className="cursor-pointer" onClick={onCreate}>
             📎 Створити новий проект [+]
           </Button>
           <Button variant="outline">Переглянути приклад проекту</Button>

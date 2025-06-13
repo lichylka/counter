@@ -128,7 +128,7 @@ function EditValueModalSecondStep({
                   {...field}
                   type="number"
                   placeholder="Кількість"
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(+e.target.value || "")}
                   className="border rounded"
                 />
               )}
@@ -142,7 +142,7 @@ function EditValueModalSecondStep({
                   {...field}
                   type="number"
                   placeholder="Ціна"
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(+e.target.value || "")}
                   className="border rounded"
                 />
               )}
