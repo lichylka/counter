@@ -29,8 +29,11 @@ type Props = {
 const formSchema = z.object({
   name: z.string().min(1, "Назва обов'язкова"),
   unit: z.string().min(1, "Виберіть одиницю виміру"),
-  quantity: z.number().min(0, "Кількість має бути більше 0"),
-  price: z.number().min(0, "Ціна має бути більше 0"),
+  quantity: z.union([
+    z.number().min(0, "Кількість має бути більше 0"),
+    z.literal(""),
+  ]),
+  price: z.union([z.number().min(0, "Ціна має бути більше 0"), z.literal("")]),
   category: z.string().min(1, "Виберіть категорію"),
   type: z.enum(["Постійні", "Змінні: Прямі", "Змінні: Накладні"]),
 });
@@ -54,17 +57,16 @@ function EditValueModalSecondStep({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      unit: "шт",
-      quantity: 0,
-      price: 0,
-      category: "Матеріали",
-      type: "Змінні: Прямі",
-    },
+      unit: "",
+      quantity: "",
+      price: "",
+      category: "",
+      type: "",
+    } as any,
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Format data to match Convex mutation requirements
       const formattedData = {
         ...data,
         quantity: Number(data.quantity),
@@ -79,7 +81,6 @@ function EditValueModalSecondStep({
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to save expense:", error);
-      // Optionally add error handling UI here
     }
   };
 
@@ -89,9 +90,66 @@ function EditValueModalSecondStep({
         <DialogTitle className="text-xl font-semibold mb-4">
           Додати рядок-запис
         </DialogTitle>
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="flex gap-4">
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Назва"
+                  className="border rounded"
+                />
+              )}
+            />
+
+            <Controller
+              name="unit"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Од. Вим." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="шт">шт</SelectItem>
+                    <SelectItem value="кг">кг</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+
+            <Controller
+              name="quantity"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder="Кількість"
+                  onChange={(e) => field.onChange(e.target.value)}
+                  className="border rounded"
+                />
+              )}
+            />
+
+            <Controller
+              name="price"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder="Ціна"
+                  onChange={(e) => field.onChange(e.target.value)}
+                  className="border rounded"
+                />
+              )}
+            />
+          </div>
+
+          <div className="flex gap-4 mb-4">
             <Controller
               name="type"
               control={control}
@@ -113,64 +171,6 @@ function EditValueModalSecondStep({
             {errors.type && (
               <span className="text-red-500">{errors.type.message}</span>
             )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  placeholder="Назва"
-                  className="border rounded"
-                />
-              )}
-            />
-
-            <Controller
-              name="unit"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Одиниця" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="шт">шт</SelectItem>
-                    <SelectItem value="кг">кг</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-
-            <Controller
-              name="quantity"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="Кількість"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  className="border rounded"
-                />
-              )}
-            />
-
-            <Controller
-              name="price"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="Ціна"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  className="border rounded"
-                />
-              )}
-            />
 
             <Controller
               name="category"
@@ -190,7 +190,6 @@ function EditValueModalSecondStep({
               )}
             />
           </div>
-
           {/* Error messages */}
           <div className="space-y-1">
             {Object.entries(errors).map(([key, error]) => (

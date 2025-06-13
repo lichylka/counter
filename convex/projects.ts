@@ -20,6 +20,7 @@ export const getById = query({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
     const project = await ctx.db.get(args.id);
+    console.log(project)
     return project;
   },
 });

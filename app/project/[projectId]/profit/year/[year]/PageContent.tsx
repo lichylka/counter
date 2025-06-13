@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
+import { periodLabelToString } from "@/helpers/periodLabelToString";
 
 type Props = {
   params: { projectId: string; year: string };
@@ -25,14 +26,15 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
     setShowFullTable((prev) => !prev);
   };
   return (
-    <div className="p-6 space-y-8">
-      <Link href={`/project/${projectId}`}>
-        <Button>Назад</Button>
-      </Link>
-      <h1 className="text-3xl font-bold">Звіт про прибутки (P&amp;L)</h1>
-      <div className="text-sm text-gray-600">
-        Проєкт: Фундук у пакуванні | Період: {year}
+    <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Звіт про прибутки (P&amp;L)</h1>
+
+        <Button variant="outline" asChild>
+          <Link href={`/project/${projectId}`}>🔙 Назад до проєкту</Link>
+        </Button>
       </div>
+      <div className="text-sm text-gray-600">Період: {year}</div>
 
       {/* Таблиця P&L */}
       <Card>
@@ -63,7 +65,9 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
               <tr className="bg-green-100 font-bold">
                 <td className="px-4 py-2 border">РІК ({year})</td>
                 <td className="px-4 py-2 border">{reportYear.income_total}</td>
-                <td className="px-4 py-2 border">{reportYear.expenses_total}</td>
+                <td className="px-4 py-2 border">
+                  {reportYear.expenses_total}
+                </td>
                 <td className="px-4 py-2 border">{reportYear.profit_total}</td>
                 <td className="px-4 py-2 border">
                   <Button variant="ghost" size="sm" onClick={toggleFullTable}>
@@ -136,27 +140,31 @@ function Quarter({
       </tr>
       {expandedQuarters[quarter._id] && (
         <>
-          {months.map((el) => (
-            <tr key={el._id}>
-              <td className="px-4 py-2 border">{el.period_label}</td>
-              <td className="px-4 py-2 border">
-                <Link
-                  href={`/project/${projectId}/profit/year/${year}/month/${el.period_label.split("/")[0]}/income`}
-                >
-                  {el.income_total}✏️
-                </Link>
-              </td>
-              <td className="px-4 py-2 border">
-                <Link
-                  href={`/project/${projectId}/profit/year/${year}/month/${el.period_label.split("/")[0]}/expenses`}
-                >
-                  {el.expenses_total}✏️
-                </Link>
-              </td>
-              <td className="px-4 py-2 border">{el.profit_total}</td>
-              <td className="px-4 py-2 border"></td>
-            </tr>
-          ))}
+          {months.map((el) => {
+            return (
+              <tr key={el._id}>
+                <td className="px-4 py-2 border">
+                  {periodLabelToString(el.period_label)}
+                </td>
+                <td className="px-4 py-2 border">
+                  <Link
+                    href={`/project/${projectId}/profit/year/${year}/month/${el.period_label.split("/")[0]}/income`}
+                  >
+                    {el.income_total}✏️
+                  </Link>
+                </td>
+                <td className="px-4 py-2 border">
+                  <Link
+                    href={`/project/${projectId}/profit/year/${year}/month/${el.period_label.split("/")[0]}/expenses`}
+                  >
+                    {el.expenses_total}✏️
+                  </Link>
+                </td>
+                <td className="px-4 py-2 border">{el.profit_total}</td>
+                <td className="px-4 py-2 border"></td>
+              </tr>
+            );
+          })}
         </>
       )}
     </>

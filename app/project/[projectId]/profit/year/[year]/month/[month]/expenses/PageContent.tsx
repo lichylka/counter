@@ -6,6 +6,10 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Doc } from "@/convex/_generated/dataModel";
+import { monthLabels } from "@/helpers/monthsLabels";
+import { periodLabelToString } from "@/helpers/periodLabelToString";
+import { Edit, Trash2 } from "lucide-react";
+
 type Props = {
   params: { projectId: string; year: string; month: string };
   periodMonth: Doc<"periods_months">;
@@ -19,9 +23,6 @@ function PageContent({ params, reportMonth }: Props) {
       period: params.month,
     })?.reverse() ?? [];
   const addExpense = useMutation(api.expenses.addExpense);
-  const project = useQuery(api.projects.getById, {
-    id: params.projectId as any,
-  });
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -46,9 +47,10 @@ function PageContent({ params, reportMonth }: Props) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
-      <header className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">
-          💸 Витрати проєкту: {project?.name}
+          Витрати за період:{" "}
+          {monthLabels[Number(params.month) - 1] || params.month} {params.year}
         </h1>
         <Button variant="outline" asChild>
           <Link
@@ -57,28 +59,11 @@ function PageContent({ params, reportMonth }: Props) {
             🔙 Назад до проєкту
           </Link>
         </Button>
-      </header>
+      </div>
 
       {/* 📅 Витрати за період */}
       <section>
-        <h2 className="text-xl font-semibold mb-2">
-          Витрати за період:{" "}
-          {[
-            "Січень",
-            "Лютий",
-            "Березень",
-            "Квітень",
-            "Травень",
-            "Червень",
-            "Липень",
-            "Серпень",
-            "Вересень",
-            "Жовтень",
-            "Листопад",
-            "Грудень",
-          ][Number(params.month) - 1] || params.month}{" "}
-          {params.year}
-        </h2>
+        <h2 className="text-xl font-semibold mb-2"></h2>
         <table className="w-full border table-auto text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -88,40 +73,19 @@ function PageContent({ params, reportMonth }: Props) {
             </tr>
           </thead>
           <tbody>
-            {Array.from(new Set(expenses.map((e) => e.period))).map(
-              (period) => {
-                const total = expenses
-                  .filter((e) => e.period === period)
-                  .reduce((sum, e) => sum + e.price * e.quantity, 0);
-                return (
-                  <tr key={period}>
-                    <td className="border px-4 py-2">
-                      {[
-                        "Січень",
-                        "Лютий",
-                        "Березень",
-                        "Квітень",
-                        "Травень",
-                        "Червень",
-                        "Липень",
-                        "Серпень",
-                        "Вересень",
-                        "Жовтень",
-                        "Листопад",
-                        "Грудень",
-                      ][Number(period) - 1] || period}{" "}
-                      {params.year}
-                    </td>
-                    <td className="border px-4 py-2">{total.toFixed(2)} грн</td>
-                    <td className="border px-4 py-2">
-                      <button className="text-blue-600 hover:underline">
-                        ✏️ Редагувати
-                      </button>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
+            <tr>
+              <td className="border px-4 py-2">
+                {periodLabelToString(reportMonth.period_label)}
+              </td>
+              <td className="border px-4 py-2">
+                {reportMonth.expenses_total} грн
+              </td>
+              <td className="border px-4 py-2">
+                <Button variant="link" className="text-purple-600">
+                  редагувати
+                </Button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -142,6 +106,7 @@ function PageContent({ params, reportMonth }: Props) {
                   <th className="border px-2 py-1">Ціна</th>
                   <th className="border px-2 py-1">Сума</th>
                   <th className="border px-2 py-1">Категорія</th>
+                  <th className="border px-2 py-1">Дії</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,11 +122,21 @@ function PageContent({ params, reportMonth }: Props) {
                       </td>
                       <td className="border px-2 py-1">{item.quantity}</td>
                       <td className="border px-2 py-1">{item.price}</td>
-                      <td className="border px-2 py-1">
-                        {reportMonth.expenses_total}
-                      </td>
+                      <td className="border px-2 py-1">{item.total_expense}</td>
                       <td className="border px-2 py-1">
                         {item.expense_item?.category}
+                      </td>
+                      <td className="border px-2 py-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          // onClick={() => onEdit(project)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </td>
                     </tr>
                   ))}

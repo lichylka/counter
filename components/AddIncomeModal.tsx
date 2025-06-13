@@ -29,8 +29,14 @@ type Props = {
 const formSchema = z.object({
   name: z.string().min(1, "Назва обов'язкова"),
   unit: z.string().min(1, "Виберіть одиницю виміру"),
-  quantity: z.number().min(0, "Кількість має бути більше 0"),
-  price: z.number().min(0, "Ціна має бути більше 0"),
+  quantity: z.union([
+    z.number().min(0, "Кількість має бути більше 0"),
+    z.literal('')
+  ]),
+  price: z.union([
+    z.number().min(0, "Ціна має бути більше 0"),
+    z.literal('')
+  ]),
   type: z.string().min(1, "Виберіть тип"),
 });
 
@@ -53,10 +59,10 @@ function AddIncomeModal({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      unit: "шт",
-      quantity: 0,
-      price: 0,
-      type: "Продукція",
+      unit: "",
+      quantity: '',
+      price: '',
+      type: "",
     },
   });
 
@@ -88,29 +94,7 @@ function AddIncomeModal({
         </DialogTitle>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <Controller
-              name="type"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Тип доходу" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Продукція">Продукція</SelectItem>
-                    <SelectItem value="Послуга">Послуга</SelectItem>
-                    <SelectItem value="Інше">Інше</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.type && (
-              <span className="text-red-500">{errors.type.message}</span>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="flex gap-4">
             <Controller
               name="name"
               control={control}
@@ -165,7 +149,27 @@ function AddIncomeModal({
               )}
             />
           </div>
-
+          <div className="flex mb-4">
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Тип доходу" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Продукція">Продукція</SelectItem>
+                    <SelectItem value="Послуга">Послуга</SelectItem>
+                    <SelectItem value="Інше">Інше</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && (
+              <span className="text-red-500">{errors.type.message}</span>
+            )}
+          </div>
           {/* Error messages */}
           <div className="space-y-1">
             {Object.entries(errors).map(([key, error]) => (

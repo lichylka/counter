@@ -52,7 +52,7 @@ export function ProjectsTable({
               {projects.map((project) => (
                 <tr key={project._id} className="border-b">
                   <td
-                    className="py-2"
+                    className="py-2 cursor-pointer"
                     onClick={() => router.push(`/project/${project._id}`)}
                   >
                     {project.name}
@@ -126,9 +126,12 @@ export function ProjectsTable({
             </tbody>
           </table>
         </div>
-        <Button variant="outline" className="mt-4" onClick={onCreate}>
-          📎 Створити новий проект [+]
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="outline" className="mt-4" onClick={onCreate}>
+            📎 Створити новий проект [+]
+          </Button>
+          <Button variant="outline">Переглянути приклад проекту</Button>
+        </div>
       </CardContent>
     </Card>
   );

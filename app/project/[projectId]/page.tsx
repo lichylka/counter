@@ -15,9 +15,19 @@ export default async function ProjectDashboard({
   const periodYears = await fetchQuery(api.periodYear.getAllForProject, {
     project_id: params.projectId as string,
   });
+  const projectData = await fetchQuery(api.projects.getById, {
+    id: params.projectId as any,
+  });
+  if (!projectData) throw new Error("Project not found");
   if (!periodYears) throw new Error("no period Years");
 
-  return <PageContent params={params} periodYears={periodYears} />;
+  return (
+    <PageContent
+      params={params}
+      periodYears={periodYears}
+      projectData={projectData}
+    />
+  );
 }
 
 // function balanceRows(years: string[], data: any[] = []) {

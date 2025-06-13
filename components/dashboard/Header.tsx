@@ -6,7 +6,7 @@ export function DashboardHeader() {
   return (
     <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
       <h1 className="text-2xl font-bold">
-        🧑‍💼 Кабінет користувача: Іван Петренко
+        🧑‍💼 Кабінет користувача: Гість
       </h1>
       <div className="flex items-center gap-4">
         <Badge variant="secondary" className="text-sm">

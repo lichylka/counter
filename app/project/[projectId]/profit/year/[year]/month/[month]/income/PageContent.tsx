@@ -6,6 +6,9 @@ import AddIncomeModal from "@/components/AddIncomeModal";
 import { Doc } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
+import { periodLabelToString } from "@/helpers/periodLabelToString";
+import { monthLabels } from "@/helpers/monthsLabels";
+import { Edit, Trash2 } from "lucide-react";
 
 type IncomeItem = {
   id: number;
@@ -71,7 +74,9 @@ function PageContent({ params, reportMonth }: Props) {
       <main className="max-w-5xl mx-auto px-4 py-10 space-y-8">
         <header className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">
-            Доходи проєкту: (назва проекту)
+            Доходи за період:{" "}
+            {monthLabels[Number(params.month) - 1] || params.month}{" "}
+            {params.year}
           </h1>
           <Button variant="outline" asChild>
             <Link
@@ -84,7 +89,6 @@ function PageContent({ params, reportMonth }: Props) {
 
         {/* Periods Table */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">Доходи за період</h2>
           <table className="w-full table-auto border">
             <thead>
               <tr className="bg-gray-100">
@@ -95,7 +99,9 @@ function PageContent({ params, reportMonth }: Props) {
             </thead>
             <tbody>
               <tr>
-                <td className="border px-4 py-2">{reportMonth.period_label}</td>
+                <td className="border px-4 py-2">
+                  {periodLabelToString(reportMonth.period_label)}
+                </td>
                 <td className="border px-4 py-2">
                   {reportMonth.income_total}
                   грн
@@ -122,7 +128,7 @@ function PageContent({ params, reportMonth }: Props) {
                 <th className="border px-2 py-1">Ціна</th>
                 <th className="border px-2 py-1">Сума</th>
                 <th className="border px-2 py-1">Тип</th>
-                <th className="border px-2 py-1">Період</th>
+                <th className="border px-2 py-1">Дії</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +142,18 @@ function PageContent({ params, reportMonth }: Props) {
                     {item.quantity * item.price}
                   </td>
                   <td className="border px-2 py-1">{item.product?.type}</td>
-                  <td className="border px-2 py-1">{item.period}</td>
+                  <td className="border px-2 py-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      // onClick={() => onEdit(project)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
