@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import BusinessPlanAIPromptForm from "@/components/BusinessPlanAIPromptForm";
 
 // const categories = [
 //   {
@@ -105,14 +106,15 @@ export default function Home() {
           Спробувати без реєстрації
         </Button>
       </section>
-
+      {/*AI prompt generator */}
+      <BusinessPlanAIPromptForm />
       {/* Features Section */}
       <section id="features" className="py-12 px-8">
         <h2 className="text-3xl font-bold text-center mb-8">Що ви отримаєте</h2>
         <Card className="max-w-2xl mx-auto mb-8 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 shadow-lg">
           <CardContent className="pt-6 text-center space-y-4">
             <h3 className="text-2xl font-semibold text-blue-800">
-              Фінансову модель 
+              Фінансову модель
             </h3>
             <div className="text-lg text-gray-600">
               <p>Професійна оцінка ефективності</p>

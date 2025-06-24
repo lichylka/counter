@@ -35,7 +35,7 @@ export const addExpense = mutation({
     await ctx.db.patch(args.reports_months_id, {
       expenses_total: reportMonth.expenses_total + total_expense,
       profit_total:
-        reportMonth.profit_total - (reportMonth.expenses_total + total_expense),
+        reportMonth.income_total - (reportMonth.expenses_total + total_expense),
     });
 
     const reportQuarter = await ctx.db.get(reportMonth.report_quarters_id);
@@ -43,7 +43,7 @@ export const addExpense = mutation({
     await ctx.db.patch(args.reports_quarters_id, {
       expenses_total: reportQuarter.expenses_total + total_expense,
       profit_total:
-        reportQuarter.profit_total -
+        reportQuarter.income_total -
         (reportQuarter.expenses_total + total_expense),
     });
 
@@ -52,7 +52,7 @@ export const addExpense = mutation({
     await ctx.db.patch(args.reports_years_id, {
       expenses_total: reportYear.expenses_total + total_expense,
       profit_total:
-        reportYear.profit_total - (reportYear.expenses_total + total_expense),
+        reportYear.income_total - (reportYear.expenses_total + total_expense),
     });
 
     return await ctx.db.insert("expenses", {

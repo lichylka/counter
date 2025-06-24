@@ -163,7 +163,7 @@ function SomeTable({
     <div>
       <div className="overflow-x-auto"></div>
       {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
-      <table className="min-w-full border-collapse border border-gray-300">
+      <table className="min-w-full border-collapse border border-gray-300 text-xs">
         <thead className="bg-gray-100">
           <tr>
             {columns.map((column) => (

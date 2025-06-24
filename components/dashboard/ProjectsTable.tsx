@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Search, Download, Trash2, RefreshCcw } from "lucide-react";
+import { Edit, Download, Trash2, RefreshCcw } from "lucide-react";
 import { Project } from "@/types/dashboard";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
@@ -18,7 +18,6 @@ interface ProjectsTableProps {
 }
 
 export function ProjectsTable({
-  onView,
   onDownload,
   onDelete,
   onCreate,
@@ -44,7 +43,7 @@ export function ProjectsTable({
               <tr className="border-b">
                 <th className="text-left py-2">Назва проекту</th>
                 <th className="text-left py-2">Статус</th>
-                <th className="text-left py-2">Останнє оновлення</th>
+                {/* <th className="text-left py-2">Останнє оновлення</th> */}
                 <th className="text-left py-2">Дії</th>
               </tr>
             </thead>
@@ -58,15 +57,11 @@ export function ProjectsTable({
                     {project.name}
                   </td>
                   <td>
-                    <Badge
-                      variant={
-                        project.status === "active" ? "default" : "secondary"
-                      }
-                    >
+                    <Badge className="text-xs" variant={"secondary"}>
                       {project.status === "active" ? "Активний" : "Архівований"}
                     </Badge>
                   </td>
-                  <td>{/* project.lastUpdate d*/}</td>
+                  {/* <td>project.lastUpdate d</td> */}
                   <td className="flex gap-2">
                     {project.status === "active" ? (
                       <>
@@ -77,20 +72,13 @@ export function ProjectsTable({
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onView(project._id)}
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => onDownload(project._id)}
                         >
                           <Download className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="ghost"
                           size="icon"
@@ -101,13 +89,6 @@ export function ProjectsTable({
                       </>
                     ) : (
                       <>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onView(project._id)}
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -126,9 +107,13 @@ export function ProjectsTable({
             </tbody>
           </table>
         </div>
-        <div className="flex gap-4 mt-4">
-          <Button variant="outline" className="cursor-pointer" onClick={onCreate}>
-            📎 Створити новий проект [+]
+        <div className="flex gap-4 mt-4 flex-wrap">
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={onCreate}
+          >
+            📎 Створити новий проект
           </Button>
           <Button variant="outline">Переглянути приклад проекту</Button>
         </div>
