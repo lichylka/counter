@@ -121,7 +121,7 @@ export default function BusinessPlanAIPromptForm() {
               />
             </div>
           </div>
-          <Button type="submit" className="w-full mt-2">
+          <Button type="submit" className="w-full mt-2" variant={"outline"}>
             🧠 Сформувати запит
           </Button>
         </form>
