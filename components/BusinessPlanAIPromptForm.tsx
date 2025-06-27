@@ -14,7 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function BusinessPlanAIPromptForm() {
+export default function BusinessPlanAIPromptForm({ ref }: { ref: any }) {
   const [productName, setProductName] = useState("");
   const [industry, setIndustry] = useState("Агро");
   const [purpose, setPurpose] = useState("Для інвестора");
@@ -31,7 +31,7 @@ export default function BusinessPlanAIPromptForm() {
   };
 
   return (
-    <Card className="max-w-3xl w-full mx-auto my-8">
+    <Card className="max-w-3xl w-full mx-auto my-6" ref={ref}>
       <CardHeader>
         <CardTitle>🛠️ Налаштування запиту АІ для бізнес-плану</CardTitle>
       </CardHeader>

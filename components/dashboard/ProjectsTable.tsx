@@ -111,7 +111,9 @@ export function ProjectsTable({
           <Button
             variant="outline"
             className="cursor-pointer"
-            onClick={onCreate}
+            onClick={() => {
+              if (projects.length < 2) onCreate();
+            }}
           >
             📎 Створити новий проект
           </Button>

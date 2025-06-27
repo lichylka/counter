@@ -109,37 +109,6 @@ export default function ProjectDashboard({
           summary
         />
       </Card> */}
-
-      {/* AI-помічник */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">🤖 AI-помічник</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Button className="w-full">⚙️ Створити бізнес-план</Button>
-          <Button className="w-full">📈 Проаналізувати прибутковість</Button>
-          <Button className="w-full">💬 Чат з AI</Button>
-        </div>
-      </Card>
-
-      {/* Документи */}
-      {/* <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">📚 Документи</h2>
-        <ul className="list-disc list-inside mb-4 space-y-2">
-          {documents.map((doc, idx) => (
-            <li key={idx} className="text-sm">
-              {doc}
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline">⬇️ Завантажити</Button>
-          <Button variant="outline">📤 Імпортувати</Button>
-        </div>
-      </Card> */}
-
-      {/* Футер */}
-      <footer className="bg-gray-800 text-white py-4 text-center rounded-lg text-sm">
-        © 2025 FinPlan — Всі права захищені
-      </footer>
     </div>
   );
 }
