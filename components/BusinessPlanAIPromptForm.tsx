@@ -122,7 +122,7 @@ export default function BusinessPlanAIPromptForm({ ref }: { ref: any }) {
             </div>
           </div>
           <Button type="submit" className="w-full mt-2" variant={"outline"}>
-            🧠 Сформувати запит
+            Сформувати запит
           </Button>
         </form>
         {showPrompt && (

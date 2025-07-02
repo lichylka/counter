@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
-import { Project } from "@/types/dashboard";
 import { ProjectsTable } from "./ProjectsTable";
 import NewProjectModal from "@/components/NewProjectModal";
 import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { CreateProjectType } from "@/types/project.types";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface ProjectsSectionProps {
   userId: string;
@@ -16,18 +16,20 @@ export function ProjectsSection({ userId }: ProjectsSectionProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isQuickMode, setIsQuickMode] = useState<boolean>(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingProject, setEditingProject] = useState<Doc<"projects"> | null>(
+    null
+  );
 
-  const handleEditProject = (project: Project) => {
+  const handleEditProject = (project: Doc<"projects">) => {
+    setIsQuickMode(true);
     setEditingProject(project);
-    setIsQuickMode(false);
     setIsModalOpen(true);
   };
   // Convex queries and mutations
   const createProject = useMutation(api.projects.create);
-//   const updateProject = useMutation(api.projects.update);
+  const updateProject = useMutation(api.projects.update);
   //   const deleteProject = useMutation(api.projects.delete);
-//   const projects = useQuery(api.projects.getAll, { userId });
+  //   const projects = useQuery(api.projects.getAll, { userId });
   const handleSaveProject = async (formData: CreateProjectType) => {
     try {
       if (!editingProject) {
@@ -35,11 +37,10 @@ export function ProjectsSection({ userId }: ProjectsSectionProps) {
         await createProject(formData);
       } else {
         // Update existing project
-        // await updateProject({
-        //   id: editingProject._id,
-        //   ...formData,
-        //   lastUpdated: new Date().toLocaleDateString("uk-UA"),
-        // });
+        await updateProject({
+          id: editingProject._id,
+          name: formData.name,
+        });
       }
       setIsModalOpen(false);
       setEditingProject(null);
@@ -92,6 +93,7 @@ export function ProjectsSection({ userId }: ProjectsSectionProps) {
         initialData={editingProject}
         quickMode={isQuickMode}
         userId={userId}
+        isUpdate={editingProject != null}
       />
     </div>
   );

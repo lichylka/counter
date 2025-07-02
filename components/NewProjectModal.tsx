@@ -17,32 +17,34 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { CreateProjectType } from "@/types/project.types";
-import { Project } from "@/types/dashboard";
 import { useEffect } from "react";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface NewProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: CreateProjectType) => void;
-  initialData?: Project | null;
+  initialData?: Doc<"projects"> | null;
   quickMode?: boolean;
   userId: string;
+  isUpdate: boolean;
 }
 
 export default function NewProjectModal({
   isOpen,
   onClose,
   onSave,
-  // initialData,
+  initialData,
   quickMode = false,
   userId,
+  isUpdate,
 }: NewProjectModalProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
   } = useForm<CreateProjectType>({
     defaultValues: {
       name: "",
@@ -52,6 +54,16 @@ export default function NewProjectModal({
       sales_start: "",
       type: "Бізнес-план",
       user_id: userId,
+    },
+    values: {
+      name: initialData?.name || "",
+      status: initialData?.status || "active",
+      start_date:
+        initialData?.start_date || new Date().toISOString().split("T")[0],
+      period_plan: initialData?.period_plan || 0,
+      sales_start: initialData?.sales_start || "",
+      type: initialData?.type || "Бізнес-план",
+      user_id: initialData?.user_id || userId,
     },
   });
 
@@ -143,40 +155,48 @@ export default function NewProjectModal({
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="period_plan">Період планування</Label>
-            <Select 
-             value={watch("period_plan")?.toString()}
-              onValueChange={(value) => {
-                // Update form value manually since Select component doesn't work with register
-                setValue("period_plan", parseInt(value));
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Оберіть період планування" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 рік</SelectItem>
-                <SelectItem value="2">2 роки</SelectItem>
-                <SelectItem value="3">3 роки</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.period_plan && (
-              <p className="text-sm text-red-500">
-                {errors.period_plan.message}
-              </p>
-            )}
-          </div>
+          {!isUpdate && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="period_plan">Період планування</Label>
+                <Select
+                  value={watch("period_plan")?.toString()}
+                  onValueChange={(value) => {
+                    // Update form value manually since Select component doesn't work with register
+                    setValue("period_plan", parseInt(value));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Оберіть період планування" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 рік</SelectItem>
+                    <SelectItem value="2">2 роки</SelectItem>
+                    <SelectItem value="3">3 роки</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.period_plan && (
+                  <p className="text-sm text-red-500">
+                    {errors.period_plan.message}
+                  </p>
+                )}
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="sales_start">Початок продажів</Label>
-            <Input id="sales_start" type="date" {...register("sales_start")} />
-            {errors.sales_start && (
-              <p className="text-sm text-red-500">
-                {errors.sales_start.message}
-              </p>
-            )}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="sales_start">Початок продажів</Label>
+                <Input
+                  id="sales_start"
+                  type="date"
+                  {...register("sales_start")}
+                />
+                {errors.sales_start && (
+                  <p className="text-sm text-red-500">
+                    {errors.sales_start.message}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

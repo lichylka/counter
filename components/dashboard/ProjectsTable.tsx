@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Download, Trash2, RefreshCcw } from "lucide-react";
-import { Project } from "@/types/dashboard";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface ProjectsTableProps {
-  onEdit: (project: Project) => void;
+  onEdit: (project: Doc<"projects">) => void;
   onView: (id: string) => void;
   onDownload: (id: string) => void;
   onDelete: (id: string) => void;
@@ -19,6 +20,7 @@ interface ProjectsTableProps {
 
 export function ProjectsTable({
   onDownload,
+  onEdit,
   onDelete,
   onCreate,
   userId,
@@ -68,7 +70,7 @@ export function ProjectsTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          // onClick={() => onEdit(project)}
+                          onClick={() => onEdit(project)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -108,15 +110,28 @@ export function ProjectsTable({
           </table>
         </div>
         <div className="flex gap-4 mt-4 flex-wrap">
-          <Button
-            variant="outline"
-            className="cursor-pointer"
-            onClick={() => {
-              if (projects.length < 2) onCreate();
-            }}
-          >
-            📎 Створити новий проект
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className={
+                  projects.length < 2 ? "cursor-pointer" : "cursor-not-allowed"
+                }
+                onClick={() => {
+                  if (projects.length < 2) onCreate();
+                }}
+              >
+                📎 Створити новий проект
+              </Button>
+            </TooltipTrigger>
+
+            {projects.length < 2 ? null : (
+              <TooltipContent>
+                <p>Не можна добавляти більше ніж 2 проекти</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+
           <Button variant="outline">Переглянути приклад проекту</Button>
         </div>
       </CardContent>

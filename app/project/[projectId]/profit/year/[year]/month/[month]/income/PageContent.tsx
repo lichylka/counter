@@ -5,10 +5,16 @@ import { Button } from "@/components/ui/button";
 import AddIncomeModal from "@/components/AddIncomeModal";
 import { Doc } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import {
+  Preloaded,
+  useMutation,
+  usePreloadedQuery,
+  useQuery,
+} from "convex/react";
 import { periodLabelToString } from "@/helpers/periodLabelToString";
 import { monthLabels } from "@/helpers/monthsLabels";
 import { Edit, Trash2 } from "lucide-react";
+import { FunctionReference } from "convex/server";
 
 type IncomeItem = {
   id: number;
@@ -22,10 +28,20 @@ type IncomeItem = {
 
 type Props = {
   params: { projectId: string; year: string; month: string };
-  reportMonth: Doc<"reports_months">;
+  preloadedReportMonth: Preloaded<
+    FunctionReference<
+      "query",
+      "public",
+      {
+        period_months_id: string;
+      },
+      Doc<"reports_months"> | null,
+      string | undefined
+    >
+  >;
 };
 
-function PageContent({ params, reportMonth }: Props) {
+function PageContent({ params, preloadedReportMonth }: Props) {
   const [incomeList, setIncomeList] = useState<IncomeItem[]>([]);
   const [aiPrompt, setAiPrompt] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -68,6 +84,10 @@ function PageContent({ params, reportMonth }: Props) {
     ];
     setIncomeList([...incomeList, ...mockAIResponse]);
   };
+
+  const reportMonth = usePreloadedQuery(preloadedReportMonth);
+
+  if (!reportMonth) return null;
 
   return (
     <div className="p-6 space-y-6 max-w-5xl mx-auto">

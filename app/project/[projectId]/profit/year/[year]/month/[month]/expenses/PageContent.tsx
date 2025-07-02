@@ -4,19 +4,35 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import {
+  Preloaded,
+  useMutation,
+  usePreloadedQuery,
+  useQuery,
+} from "convex/react";
 import { Doc } from "@/convex/_generated/dataModel";
 import { monthLabels } from "@/helpers/monthsLabels";
 import { periodLabelToString } from "@/helpers/periodLabelToString";
 import { Edit, Trash2 } from "lucide-react";
+import { FunctionReference } from "convex/server";
 
 type Props = {
   params: { projectId: string; year: string; month: string };
   periodMonth: Doc<"periods_months">;
-  reportMonth: Doc<"reports_months">;
+  preloadedReportMonth: Preloaded<
+    FunctionReference<
+      "query",
+      "public",
+      {
+        period_months_id: string;
+      },
+      Doc<"reports_months"> | null,
+      string | undefined
+    >
+  >;
 };
 
-function PageContent({ params, reportMonth }: Props) {
+function PageContent({ params, preloadedReportMonth }: Props) {
   const expenses =
     useQuery(api.expenses.getExpensesForProjectWithPeriod, {
       projectId: params.projectId,
@@ -44,6 +60,10 @@ function PageContent({ params, reportMonth }: Props) {
     });
     setIsOpen(false);
   };
+
+  const reportMonth = usePreloadedQuery(preloadedReportMonth);
+
+  if (!reportMonth) return null;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">

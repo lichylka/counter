@@ -1,4 +1,4 @@
-import { fetchQuery } from "convex/nextjs";
+import { fetchQuery, preloadQuery } from "convex/nextjs";
 import PageContent from "./PageContent";
 import { api } from "@/convex/_generated/api";
 
@@ -19,17 +19,16 @@ export default async function ExpensesPage({
     throw new Error("Period month not found");
   }
 
-  const reportMonth = await fetchQuery(api.reportMonth.getOne, {
+  const preloadedReportMonth = await preloadQuery(api.reportMonth.getOne, {
     period_months_id: periodMonth._id,
   });
 
-  if (!reportMonth) throw new Error("Report month not found");
 
   return (
     <PageContent
       params={params}
       periodMonth={periodMonth}
-      reportMonth={reportMonth}
+      preloadedReportMonth={preloadedReportMonth}
     />
   );
 }
