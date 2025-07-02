@@ -71,6 +71,31 @@ export default function ProjectDashboard({
 
       <Card className="p-4">
         <SomeTable
+          title="Інвестиції та позики"
+          rows={reportYears}
+          summary
+          columns={[
+            "Період",
+            "Інвестдоходи",
+            "Інвествидатки",
+            "Інвестпотік",
+            "Розрахунок",
+          ]}
+          projectId={params.projectId}
+          rowAction={(row) => (
+            <Link
+              href={`/project/${params.projectId}/investments/${row.year}/${"type"}`}
+            >
+              <Button variant="outline" size="sm">
+                Редагувати
+              </Button>
+            </Link>
+          )}
+        />
+      </Card>
+
+      <Card className="p-4">
+        <SomeTable
           title="Звіт (P&L)"
           rows={reportYears}
           summary
@@ -90,6 +115,13 @@ export default function ProjectDashboard({
           title="Грошопотік"
           rows={reportYears}
           summary
+          columns={[
+            "Період",
+            "Вхідпотік",
+            "Вихідпотік",
+            "Чистий потік",
+            "Розрахунок",
+          ]}
           projectId={params.projectId}
           rowAction={() => <Button variant="outline">Розгорнути</Button>}
         />

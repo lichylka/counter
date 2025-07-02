@@ -1,52 +1,13 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BusinessPlanAIPromptForm from "@/components/BusinessPlanAIPromptForm";
 import { useRef } from "react";
-
-// const categories = [
-//   {
-//     title: "Основи бізнес-планування",
-//     items: [
-//       "Що має містити повний бізнес-план?",
-//       "Поясни різницю між P&L, Cash Flow і Балансом.",
-//       "Як визначити початкові витрати для мого бізнесу?",
-//       "Як розраховується точка беззбитковості?",
-//     ],
-//   },
-//   {
-//     title: "Бізнес-план під мету",
-//     items: [
-//       "Згенеруй бізнес-план для залучення інвестора.",
-//       "Підготуй бізнес-план для подання в банк на кредит.",
-//       "Напиши короткий бізнес-план для особистого використання.",
-//       "Як адаптувати мій план для державної грантової програми?",
-//     ],
-//   },
-//   {
-//     title: "Бізнес-план під сферу діяльності",
-//     items: [
-//       "Створи план для кав'ярні на 20 посадочних місць.",
-//       "Розпиши план для онлайн-магазину хендмейду.",
-//       "Створи P&L для виробництва меблів на замовлення.",
-//       "Згенеруй Cash Flow для сервісу доставки їжі.",
-//     ],
-//   },
-//   {
-//     title: "Професійна підтримка та допомога",
-//     items: [
-//       "Проаналізуй рентабельність проєкту за останній квартал.",
-//       "Запропонуй шляхи зниження витрат.",
-//       "Порівняй два сценарії розвитку: базовий і агресивний.",
-//       "Сформуй рекомендації щодо масштабування бізнесу.",
-//     ],
-//   },
-// ];
+import IdeasForm from "@/components/IdeasForm";
 
 export default function Home() {
   const formRef = useRef<HTMLDivElement>(null);
-  console.log(formRef.current);
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -146,6 +107,78 @@ export default function Home() {
           <Link href="/dashboard">Почати свій проект</Link>
         </Button>
       </section>
+
+      <section id="calculators" className="bg-white py-12">
+        <div className="max-w-5xl mx-auto px-2">
+          <h2 className="text-2xl font-bold mb-2 text-center">
+            Спробуйте калькулятори прямо зараз — без реєстрації
+          </h2>
+          <p className="text-base text-muted-foreground mb-8 text-center">
+            Найпопулярніші розрахунки у відкритому доступі.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 mb-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>☀️ Калькулятор окупності домашньої СЕС</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  30 секунд — і ви знаєте прибуток вашої сонячної станції.
+                </p>
+                <Button asChild variant={"outline"} className="w-full">
+                  <Link href="/solar-calc.html">Відкрити</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>☀️ Калькулятор стартапу SaaS-проєкту</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  Показники юніт-економіки - доступно і швидко.
+                </p>
+                <Button asChild variant={"outline"} className="w-full">
+                  <Link href="/solar-calc.html">Відкрити</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  🌾 Агрокалькулятор змінних витрат на 1 га/поле
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  Розрахуйте собівартість культури на полі.
+                </p>
+                <Button asChild variant={"outline"} className="w-full">
+                  <Link href="/agro-cost.html">Відкрити</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  📈 Калькулятор прибутковості магазину / кафе
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  Дізнайтеся, коли ваш бізнес вийде у плюс.
+                </p>
+                <Button asChild variant={"outline"} className="w-full">
+                  <Link href="/breakeven.html">Відкрити</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+      <IdeasForm />
     </div>
   );
 }
