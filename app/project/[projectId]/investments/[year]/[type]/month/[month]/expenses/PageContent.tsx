@@ -74,7 +74,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
         </h1>
         <Button variant="outline" asChild>
           <Link
-            href={`/project/${params.projectId}/profit/year/${params.year}`}
+            href={`/project/${params.projectId}/investments/${params.year}/type`}
           >
             🔙 Назад до проєкту
           </Link>

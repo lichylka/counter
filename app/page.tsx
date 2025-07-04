@@ -114,7 +114,8 @@ export default function Home() {
             Спробуйте калькулятори прямо зараз — без реєстрації
           </h2>
           <p className="text-base text-muted-foreground mb-8 text-center">
-            Найпопулярніші розрахунки у відкритому доступі.
+            Найпопулярніші розрахунки у відкритому доступ готові для
+            завантаження
           </p>
           <div className="grid gap-4 sm:grid-cols-2 mb-4">
             <Card>
@@ -126,7 +127,9 @@ export default function Home() {
                   30 секунд — і ви знаєте прибуток вашої сонячної станції.
                 </p>
                 <Button asChild variant={"outline"} className="w-full">
-                  <Link href="/solar-calc.html">Відкрити</Link>
+                  <Link href="https://drive.google.com/uc?export=download&id=1eOcM6hb1O5gxs4agGiTxPyjN4-lvCsCr">
+                    Завантажити
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -139,7 +142,9 @@ export default function Home() {
                   Показники юніт-економіки - доступно і швидко.
                 </p>
                 <Button asChild variant={"outline"} className="w-full">
-                  <Link href="/solar-calc.html">Відкрити</Link>
+                  <Link href="https://drive.google.com/uc?export=download&id=1HcQJCmqLrZbWeGRc4VGbiynlqVtZcHS4">
+                    Завантажити
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -156,7 +161,9 @@ export default function Home() {
                   Розрахуйте собівартість культури на полі.
                 </p>
                 <Button asChild variant={"outline"} className="w-full">
-                  <Link href="/agro-cost.html">Відкрити</Link>
+                  <Link href="https://drive.google.com/uc?export=download&id=1PsGLkHSDMHewt9ae40ejOWBc818HLqkv">
+                    Завантажити
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -171,7 +178,9 @@ export default function Home() {
                   Дізнайтеся, коли ваш бізнес вийде у плюс.
                 </p>
                 <Button asChild variant={"outline"} className="w-full">
-                  <Link href="/breakeven.html">Відкрити</Link>
+                  <Link href="https://drive.google.com/uc?export=download&id=10wW6unLXL0l1nYEdN9ae1PC3X8ULHKie">
+                    Завантажити
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
