@@ -4,6 +4,7 @@ import "./globals.css";
 import { ConvexClientProvider } from "../components/ConvexProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <Header />
           {children} <Footer />
+          <Toaster />
         </ConvexClientProvider>
       </body>
     </html>

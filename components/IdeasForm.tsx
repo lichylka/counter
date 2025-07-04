@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import resend from "@/lib/resend";
+import ideaFormAction from "@/actions/IdeaFormAction";
+import { toast } from "sonner";
 
 function IdeasForm() {
-  const [message, setMessage] = useState("");
   return (
     <section className="py-12">
       <div className="max-w-xl mx-auto px-2">
@@ -21,20 +21,26 @@ function IdeasForm() {
         <form
           name="feedback"
           className="space-y-4"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            console.log("send");
-            const res = await resend.emails.send({
-              from: "ideas@resend.dev",
-              to: "economiccounter@gmail.com",
-              subject: "Ideas",
-              html: `<p>${message}</p>`,
-            });
-            console.log(res);
-            if (res.data) {
-              setMessage("");
+          action={async (formData) => {
+            const res = await ideaFormAction(formData);
+            if(res.data){
+              toast.success("Ваше повідомлення надіслано");
+            }else{
+              toast.error("Помилка при надсиланні повідомлення");
             }
           }}
+          // onSubmit={async (e) => {
+          //   e.preventDefault();
+          //   console.log("send");
+          //   const res = await resend.emails.send({
+          //     from: "ideas@resend.dev",
+          //     to: "economiccounter@gmail.com",
+          //     subject: "Ideas",
+          //     html: `<p>${message}</p>`,
+          //   });
+          //   console.log(res);
+
+          // }}
         >
           <Label htmlFor="message">Ваше повідомлення / побажання:</Label>
           <Textarea
@@ -42,7 +48,6 @@ function IdeasForm() {
             name="message"
             required
             className="min-h-[100px]"
-            onChange={(e) => setMessage(e.target.value)}
           />
           <Button type="submit" variant={"outline"} className="w-full">
             Надіслати
