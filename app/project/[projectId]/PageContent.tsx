@@ -332,13 +332,13 @@ function CashflowTable({
             <tr key={index} className="even:bg-gray-50">
               <td className="border border-gray-300 px-4 py-2">{row.year}</td>
               <td className="border border-gray-300 px-4 py-2">
-                {row.income_total}
+                {row.income_total + (row.invest_income_total || 0)}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {row.expenses_total}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {row.profit_total}
+                {row.profit_total + (row.invest_profit_total || 0)}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {rowAction(row)}
