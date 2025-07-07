@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import AddIncomeModal from "@/components/AddIncomeModal";
 import { Doc } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 import {
@@ -15,6 +14,7 @@ import { periodLabelToString } from "@/helpers/periodLabelToString";
 import { monthLabels } from "@/helpers/monthsLabels";
 import { Edit, Trash2 } from "lucide-react";
 import { FunctionReference } from "convex/server";
+import AddInvestIncomeModal from "@/components/AddInvestIncomeModal";
 
 type IncomeItem = {
   id: number;
@@ -47,19 +47,22 @@ function PageContent({ params, preloadedReportMonth }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const incomes =
-    useQuery(api.income.getIncomeForProjectWithPeriod, {
+    useQuery(api.investIncomes.getIncomeForProjectWithPeriod, {
       projectId: params.projectId,
       period: params.month,
     })?.reverse() ?? [];
 
-  const addIncome = useMutation(api.income.addIncome);
+  const addIncome = useMutation(api.investIncomes.addIncome);
 
   const handleAddIncome = () => {
     setIsOpen(true);
   };
 
   const handleSaveNewRow = async (
-    incomeData: Omit<typeof api.income.addIncome._args, "period" | "projectId">
+    incomeData: Omit<
+      typeof api.investIncomes.addIncome._args,
+      "period" | "projectId"
+    >
   ) => {
     await addIncome({
       ...incomeData,
@@ -123,7 +126,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                   {periodLabelToString(reportMonth.period_label)}
                 </td>
                 <td className="border px-4 py-2">
-                  {reportMonth.income_total}
+                  {reportMonth.invest_income_total}
                   грн
                 </td>
                 <td className="border px-4 py-2">
@@ -147,21 +150,19 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                 <th className="border px-2 py-1">Кількість</th>
                 <th className="border px-2 py-1">Ціна</th>
                 <th className="border px-2 py-1">Сума</th>
-                <th className="border px-2 py-1">Тип</th>
                 <th className="border px-2 py-1">Дії</th>
               </tr>
             </thead>
             <tbody>
               {incomes.map((item) => (
                 <tr key={item._id}>
-                  <td className="border px-2 py-1">{item.product?.name}</td>
-                  <td className="border px-2 py-1">{item.product?.unit}</td>
+                  <td className="border px-2 py-1">{item.name}</td>
+                  <td className="border px-2 py-1">{item.unit}</td>
                   <td className="border px-2 py-1">{item.quantity}</td>
                   <td className="border px-2 py-1">{item.price}</td>
                   <td className="border px-2 py-1">
                     {item.quantity * item.price}
                   </td>
-                  <td className="border px-2 py-1">{item.product?.type}</td>
                   <td className="border px-2 py-1">
                     <Button
                       variant="ghost"
@@ -211,7 +212,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           <Button>Зберегти зміни</Button>
         </div>
       </main>
-      <AddIncomeModal
+      <AddInvestIncomeModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         handleSaveNewRow={handleSaveNewRow}

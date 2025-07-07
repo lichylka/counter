@@ -70,11 +70,15 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
                 ))}
               <tr className="bg-green-100 font-bold">
                 <td className="px-4 py-2 border">РІК ({year})</td>
-                <td className="px-4 py-2 border">{reportYear.income_total}</td>
+                <td className="px-4 py-2 border">
+                  {reportYear.invest_income_total || 0}
+                </td>
                 <td className="px-4 py-2 border">
                   {reportYear.expenses_total}
                 </td>
-                <td className="px-4 py-2 border">{reportYear.profit_total}</td>
+                <td className="px-4 py-2 border">
+                  {reportYear.invest_profit_total || 0}
+                </td>
                 <td className="px-4 py-2 border">
                   <Button variant="ghost" size="sm" onClick={toggleFullTable}>
                     {showFullTable
@@ -131,9 +135,9 @@ function Quarter({
     <>
       <tr className="bg-gray-50 font-semibold">
         <td className="px-4 py-2 border">{quarter.period_label}</td>
-        <td className="px-4 py-2 border">{quarter.income_total}</td>
+        <td className="px-4 py-2 border">{quarter.invest_income_total || 0}</td>
         <td className="px-4 py-2 border">{quarter.expenses_total}</td>
-        <td className="px-4 py-2 border">{quarter.profit_total}</td>
+        <td className="px-4 py-2 border">{quarter.invest_profit_total || 0}</td>
         <td className="px-4 py-2 border">
           <Button
             variant="ghost"
@@ -156,7 +160,7 @@ function Quarter({
                   <Link
                     href={`/project/${projectId}/investments/${year}/type/month/${el.period_label.split("/")[0]}/income`}
                   >
-                    {el.income_total}✏️
+                    {el.invest_income_total || 0}✏️
                   </Link>
                 </td>
                 <td className="px-4 py-2 border">
@@ -166,7 +170,9 @@ function Quarter({
                     {el.expenses_total}✏️
                   </Link>
                 </td>
-                <td className="px-4 py-2 border">{el.profit_total}</td>
+                <td className="px-4 py-2 border">
+                  {el.invest_profit_total || 0}
+                </td>
                 <td className="px-4 py-2 border"></td>
               </tr>
             );

@@ -70,7 +70,7 @@ export default function ProjectDashboard({
       </Card> */}
 
       <Card className="p-4">
-        <SomeTable
+        <InvestTable
           title="Інвестиції та позики"
           rows={reportYears}
           summary
@@ -144,6 +144,79 @@ export default function ProjectDashboard({
     </div>
   );
 }
+
+function InvestTable({
+  title,
+  columns = ["Період", "Доходи", "Витрати", "Прибуток", "Розрахунок"],
+  rows,
+  summary = false,
+  rowAction,
+}: {
+  title?: string;
+  columns?: string[];
+  rows?: typeof api.reportYear.getMultipleWithIncludes._returnType;
+  summary?: boolean;
+  projectId: string;
+  rowAction: (
+    row: (typeof api.reportYear.getMultipleWithIncludes._returnType)[0]
+  ) => JSX.Element;
+}) {
+  return (
+    <div>
+      <div className="overflow-x-auto"></div>
+      {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
+      <table className="min-w-full border-collapse border border-gray-300 text-xs">
+        <thead className="bg-gray-100">
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={column}
+                className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700"
+              >
+                {column}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows?.map((row, index) => (
+            <tr key={index} className="even:bg-gray-50">
+              <td className="border border-gray-300 px-4 py-2">{row.year}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {row.invest_income_total || 0}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {/* {row.invest_expenses_total} */}0
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {row.invest_profit_total || 0}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {rowAction(row)}
+              </td>
+            </tr>
+          ))}
+          {summary && (
+            <tr className="bg-green-100  font-semibold">
+              <td className="border border-gray-300 px-4 py-2">Разом</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {rows?.reduce((sum, row) => sum + (row.income_total || 0), 0)}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {rows?.reduce((sum, row) => sum + (row.expenses_total || 0), 0)}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {rows?.reduce((sum, row) => sum + (row.profit_total || 0), 0)}
+              </td>
+              <td className="border border-gray-300 px-4 py-2"></td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function SomeTable({
   title,
   columns = ["Період", "Доходи", "Витрати", "Прибуток", "Розрахунок"],
