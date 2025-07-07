@@ -54,6 +54,8 @@ export const addIncome = mutation({
       total_income: total_income,
       //@ts-ignore
       project_id: args.projectId,
+      kind:"Безповоротні",
+      category:"Виручка"
     });
   },
 });

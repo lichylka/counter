@@ -20,6 +20,16 @@ export default defineSchema({
     type: v.string(),
   }),
 
+  invest_incomes: defineTable({
+    project_id: v.id("projects"),
+    quantity: v.number(),
+    price: v.number(),
+    period: v.string(),
+    total_income: v.number(),
+    kind: v.string(),
+    category: v.string(),
+  }),
+
   incomes: defineTable({
     project_id: v.id("projects"),
     product_id: v.id("products"),
@@ -27,6 +37,8 @@ export default defineSchema({
     price: v.number(),
     period: v.string(),
     total_income: v.number(),
+    kind: v.literal("Безповоротні"),
+    category: v.literal("Виручка"),
   }),
 
   expense_items: defineTable({
