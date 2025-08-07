@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { updateReports } from "./reportHelpers";
 
 export const addIncome = mutation({
   args: {
@@ -25,25 +26,8 @@ export const addIncome = mutation({
 
     const total_income = args.quantity * args.price;
 
-    const reportMonth = await ctx.db.get(args.reports_months_id);
-    if (!reportMonth) throw new Error("Report month not found");
-    await ctx.db.patch(args.reports_months_id, {
-      income_total: (reportMonth.income_total ?? 0) + total_income,
-      profit_total: (reportMonth.profit_total ?? 0) + total_income,
-    });
-
-    const reportQuarter = await ctx.db.get(reportMonth.report_quarters_id);
-    if (!reportQuarter) throw new Error("Report quarter not found");
-    await ctx.db.patch(args.reports_quarters_id, {
-      income_total: (reportQuarter.income_total ?? 0) + total_income,
-      profit_total: (reportQuarter.profit_total ?? 0) + total_income,
-    });
-
-    const reportYear = await ctx.db.get(reportMonth.report_years_id);
-    if (!reportYear) throw new Error("Report year not found");
-    await ctx.db.patch(args.reports_years_id, {
-      income_total: (reportYear.income_total ?? 0) + total_income,
-      profit_total: (reportYear.profit_total ?? 0) + total_income,
+    await updateReports(ctx, args.reports_months_id, {
+      income: total_income,
     });
 
     return await ctx.db.insert("incomes", {
@@ -54,8 +38,8 @@ export const addIncome = mutation({
       total_income: total_income,
       //@ts-ignore
       project_id: args.projectId,
-      kind:"Безповоротні",
-      category:"Виручка"
+      kind: "Безповоротні",
+      category: "Виручка",
     });
   },
 });
@@ -83,4 +67,3 @@ export const getIncomeForProjectWithPeriod = query({
     return res;
   },
 });
-
