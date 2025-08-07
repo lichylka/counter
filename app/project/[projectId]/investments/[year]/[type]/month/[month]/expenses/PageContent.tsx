@@ -1,5 +1,4 @@
 "use client";
-import EditValueModalSecondStep from "@/components/EditValueModalSecondStep";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
@@ -15,6 +14,16 @@ import { monthLabels } from "@/helpers/monthsLabels";
 import { periodLabelToString } from "@/helpers/periodLabelToString";
 import { Edit, Trash2 } from "lucide-react";
 import { FunctionReference } from "convex/server";
+import AddInvestExpenses from "@/components/AddInvestExpenses";
+
+type RowOmit = Omit<
+  typeof api.investExpenses.addExpense._args.args,
+  "period" | "projectId"
+>;
+
+export type CreateIvestExpense =
+  | (RowOmit & { asset_id: string })
+  | (RowOmit & { assetName: string; assetType: string });
 
 type Props = {
   params: { projectId: string; year: string; month: string };
@@ -32,13 +41,25 @@ type Props = {
   >;
 };
 
-function PageContent({ params, preloadedReportMonth }: Props) {
-  const expenses =
-    useQuery(api.expenses.getExpensesForProjectWithPeriod, {
+function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
+  const investExpenses =
+    useQuery(api.investExpenses.getExpensesForProjectWithPeriod, {
       projectId: params.projectId,
-      period: params.month,
+      period_month_id: periodMonth._id,
     })?.reverse() ?? [];
-  const addExpense = useMutation(api.expenses.addExpense);
+
+  const addExpense = useMutation(api.investExpenses.addExpense);
+
+  const assets =
+    useQuery(api.asset.getForProject, {
+      projectId: params.projectId,
+    }) || [];
+
+  const assetsPerMonths =
+    useQuery(api.assetsPerMonth.getPerMonthAndProject, {
+      periods_months_id: periodMonth._id,
+      project_id: params.projectId,
+    }) || [];
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -47,16 +68,14 @@ function PageContent({ params, preloadedReportMonth }: Props) {
     setIsOpen(true);
   };
 
-  const handleSaveNewRow = async (
-    expenseData: Omit<
-      typeof api.expenses.addExpense._args,
-      "period" | "projectId"
-    >
-  ) => {
+  const handleSaveNewRow = async (expenseData: CreateIvestExpense) => {
     await addExpense({
-      ...expenseData,
-      period: params.month,
-      projectId: params.projectId,
+      args: {
+        ...expenseData,
+        period: params.month,
+        projectId: params.projectId,
+        type: expenseData.type as any,
+      },
     });
     setIsOpen(false);
   };
@@ -98,7 +117,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                 {periodLabelToString(reportMonth.period_label)}
               </td>
               <td className="border px-4 py-2">
-                {reportMonth.expenses_total} грн
+                {reportMonth.invest_expense_total ?? 0} грн
               </td>
               <td className="border px-4 py-2">
                 <Button variant="link" className="text-purple-600">
@@ -130,7 +149,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {expenses
+                {investExpenses
                   .filter((e) => e.expense_item?.type === type)
                   .map((item) => (
                     <tr key={item._id}>
@@ -174,6 +193,74 @@ function PageContent({ params, preloadedReportMonth }: Props) {
         ➕ Додати витрату вручну
       </button>
 
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-2">Деталізація активів</h3>
+        <h3 className="text-md font-semibold mb-2">
+          Інвестиції за період:{" "}
+          {monthLabels[Number(params.month) - 1] || params.month} {params.year}
+        </h3>
+        <table className="w-full border table-auto text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-2 py-1">Назва</th>
+              <th className="border px-2 py-1">Сума на початку</th>
+              <th className="border px-2 py-1">Сума інвестицій</th>
+              <th className="border px-2 py-1">Сума на кінець</th>
+              <th className="border px-2 py-1">Вид активу</th>
+              <th className="border px-2 py-1">Дії</th>
+            </tr>
+          </thead>
+          <tbody>
+            {assets?.map((el) => {
+              const assetMonth = assetsPerMonths.find(
+                (month) => month.asset_id == el._id
+              );
+              if (!assetMonth) {
+                console.error("no month for this asset");
+                return <tr key={el._id}></tr>;
+              }
+              return (
+                <tr key={el._id}>
+                  <td className="border px-2 py-1">{el.name}</td>
+                  <td className="border px-2 py-1">
+                    {assetMonth.opening_balance}
+                  </td>
+                  <td className="border px-2 py-1">
+                    {assetMonth.monthly_depreciation}
+                  </td>
+                  <td className="border px-2 py-1">
+                    {assetMonth.closing_balance}
+                  </td>
+                  <td className="border px-2 py-1">{el.assetType}</td>
+                </tr>
+              );
+            })}
+            {/* <tr key={item._id}>
+              <td className="border px-2 py-1">{item.expense_item?.name}</td>
+              <td className="border px-2 py-1">{item.expense_item?.unit}</td>
+              <td className="border px-2 py-1">{item.quantity}</td>
+              <td className="border px-2 py-1">{item.price}</td>
+              <td className="border px-2 py-1">{item.total_expense}</td>
+              <td className="border px-2 py-1">
+                {item.expense_item?.category}
+              </td>
+              <td className="border px-2 py-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  // onClick={() => onEdit(project)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </td>
+            </tr> */}
+          </tbody>
+        </table>
+      </div>
+
       {/* 🤖 AI-помічник */}
       <section>
         <h2 className="text-xl font-semibold mb-2 mt-6">AI-помічник</h2>
@@ -191,13 +278,15 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           🤖 Запитати у AI
         </button>
       </section>
-      <EditValueModalSecondStep
+      <AddInvestExpenses
         isOpen={isOpen}
         handleSaveNewRow={handleSaveNewRow}
         setIsOpen={setIsOpen}
         reports_months_id={reportMonth._id}
         reports_quarters_id={reportMonth.report_quarters_id}
         reports_years_id={reportMonth.report_years_id}
+        period_month_id={periodMonth._id}
+        assets={assets}
       />
     </main>
   );

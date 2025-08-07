@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import {
   Select,
@@ -9,22 +9,22 @@ import {
 } from "./ui/select";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { api } from "@/convex/_generated/api";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
+import { AssetFinder } from "./AssetFinder";
+import { CreateIvestExpense } from "@/app/project/[projectId]/investments/[year]/[type]/month/[month]/expenses/PageContent";
 
 type Props = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  handleSaveNewRow: (
-    row: Omit<typeof api.expenses.addExpense._args, "period" | "projectId">
-  ) => void;
+  handleSaveNewRow: (row: CreateIvestExpense) => void;
   reports_months_id: Id<"reports_months">;
   reports_quarters_id: Id<"reports_quarters">;
   reports_years_id: Id<"reports_years">;
   period_month_id: Id<"periods_months">;
+  assets: Doc<"assets">[];
 };
 
 const formSchema = z.object({
@@ -37,11 +37,14 @@ const formSchema = z.object({
   price: z.union([z.number().min(0, "Ціна має бути більше 0"), z.literal("")]),
   category: z.string().min(1, "Виберіть категорію"),
   type: z.enum(["Постійні", "Змінні: Прямі", "Змінні: Накладні"]),
+  assetId: z.string().optional(),
+  assetName: z.string().optional(),
+  assetType: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-function EditValueModalSecondStep({
+function AddInvestExpenses({
   isOpen,
   setIsOpen,
   handleSaveNewRow,
@@ -49,6 +52,7 @@ function EditValueModalSecondStep({
   reports_quarters_id,
   reports_years_id,
   period_month_id,
+  assets,
 }: Props) {
   const {
     control,
@@ -62,34 +66,54 @@ function EditValueModalSecondStep({
       unit: "",
       quantity: "",
       price: "",
-      category: "",
       type: "",
+      asset: "",
+      category: "",
+      assteType: "",
+      assetName: "",
     } as any,
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const formattedData = {
-        ...data,
-        quantity: Number(data.quantity),
-        price: Number(data.price),
-        reports_months_id,
-        reports_quarters_id,
-        reports_years_id,
-        period_month_id,
-      };
+      const { assetId, assetName, assetType, ...rest } = data;
+      const formattedData = assetId
+        ? ({
+            ...rest,
+            quantity: Number(data.quantity),
+            price: Number(data.price),
+            reports_months_id,
+            reports_quarters_id,
+            reports_years_id,
+            period_month_id,
+            asset_id: assetId,
+          } satisfies CreateIvestExpense)
+        : ({
+            ...rest,
+            quantity: Number(data.quantity),
+            price: Number(data.price),
+            reports_months_id,
+            reports_quarters_id,
+            reports_years_id,
+            period_month_id,
+            assetName: assetName as string,
+            assetType: assetType as string,
+          } satisfies CreateIvestExpense);
 
       handleSaveNewRow(formattedData);
       reset();
+      setCreate(false);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to save expense:", error);
     }
   };
 
+  const [create, setCreate] = useState(false);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="sm:max-w-2xl">
         <DialogTitle className="text-xl font-semibold mb-4">
           Додати рядок-запис
         </DialogTitle>
@@ -192,6 +216,61 @@ function EditValueModalSecondStep({
                 </Select>
               )}
             />
+
+            <div className={create ? "" : "hidden"}>
+              <Controller
+                name="assetName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Назва активу"
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                    }}
+                    className="border rounded"
+                  />
+                )}
+              />
+            </div>
+            <div className={create ? "hidden" : ""}>
+              <Controller
+                name="assetId"
+                control={control}
+                render={({ field }) => (
+                  <AssetFinder
+                    assets={assets}
+                    onChange={field.onChange}
+                    value={field.value}
+                    setCreate={setCreate}
+                    create={create}
+                  />
+                )}
+              />
+            </div>
+            <Controller
+              name="assetType"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={!create}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Тип активу" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bio_multi_year">
+                      Біобагаторічний
+                    </SelectItem>
+                    <SelectItem value="material">Матеріальний</SelectItem>
+                    <SelectItem value="intangible">Нематеріальний</SelectItem>
+                    <SelectItem value="bio_one_year">Біооднорічний</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
           {/* Error messages */}
           <div className="space-y-1">
@@ -208,6 +287,7 @@ function EditValueModalSecondStep({
               variant="outline"
               onClick={() => {
                 reset();
+                setCreate(false);
                 setIsOpen(false);
               }}
             >
@@ -223,4 +303,4 @@ function EditValueModalSecondStep({
   );
 }
 
-export default EditValueModalSecondStep;
+export default AddInvestExpenses;

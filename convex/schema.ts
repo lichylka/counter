@@ -61,25 +61,57 @@ export default defineSchema({
     periods_months_id: v.optional(v.id("periods_months")),
   }),
 
-  profit: defineTable({
+  invest_expenses: defineTable({
     project_id: v.id("projects"),
+    expense_item_id: v.id("expense_items"),
+    quantity: v.number(),
+    price: v.number(),
+    total_expense: v.number(),
     period: v.string(),
-    opening_profit: v.number(),
-    incomes: v.number(),
-    expenses: v.number(),
-    closing_profit: v.number(),
+    assets_id: v.id("assets"),
+    periods_months_id: v.optional(v.id("periods_months")),
+  }).index("by_periods_months_id", ["periods_months_id"]),
+
+  assets_per_months: defineTable({
+    opening_balance: v.number(),
+    monthly_increase: v.number(),
+    monthly_depreciation: v.number(),
+    closing_balance: v.number(),
+    asset_id: v.id("assets"),
+    periods_months_id: v.id("periods_months"),
+    project_id: v.id("projects"),
+  })
+    .index("by_asset_id", ["asset_id"])
+    .index("by_period_month_id_and_project_id", [
+      "periods_months_id",
+      "project_id",
+    ]),
+
+  assets: defineTable({
+    project_id: v.id("projects"),
+    name: v.string(),
+    assetType: v.string(),
   }),
 
-  cashflow: defineTable({
-    project_id: v.id("projects"),
-    period: v.string(),
-    opening_balance: v.number(),
-    inflow_operational: v.number(),
-    inflow_investment: v.number(),
-    outflow_operational: v.number(),
-    outflow_investment: v.number(),
-    closing_balance: v.number(),
-  }),
+  // profit: defineTable({
+  //   project_id: v.id("projects"),
+  //   period: v.string(),
+  //   opening_profit: v.number(),
+  //   incomes: v.number(),
+  //   expenses: v.number(),
+  //   closing_profit: v.number(),
+  // }),
+
+  // cashflow: defineTable({
+  //   project_id: v.id("projects"),
+  //   period: v.string(),
+  //   opening_balance: v.number(),
+  //   inflow_operational: v.number(),
+  //   inflow_investment: v.number(),
+  //   outflow_operational: v.number(),
+  //   outflow_investment: v.number(),
+  //   closing_balance: v.number(),
+  // }),
 
   users: defineTable({
     id: v.string(),
@@ -121,7 +153,7 @@ export default defineSchema({
     index: v.number(),
     start_date: v.string(),
     dateEnd: v.string(),
-  }),
+  }).index("by_project_id", ["project_id"]),
 
   reports_project: defineTable({
     project_id: v.id("projects"),
@@ -145,6 +177,7 @@ export default defineSchema({
     period_id: v.id("periods_years"),
     income_total: v.number(),
     invest_income_total: v.optional(v.number()),
+    invest_expense_total: v.optional(v.number()),
     expenses_total: v.number(),
     profit_total: v.number(),
     invest_profit_total: v.optional(v.number()),
@@ -162,6 +195,7 @@ export default defineSchema({
     month_ids: v.array(v.string()),
     income_total: v.number(),
     invest_income_total: v.optional(v.number()),
+    invest_expense_total: v.optional(v.number()),
     expenses_total: v.number(),
     profit_total: v.number(),
     invest_profit_total: v.optional(v.number()),
@@ -180,6 +214,7 @@ export default defineSchema({
     period_label: v.string(),
     income_total: v.number(),
     invest_income_total: v.optional(v.number()),
+    invest_expense_total: v.optional(v.number()),
     expenses_total: v.number(),
     profit_total: v.number(),
     invest_profit_total: v.optional(v.number()),

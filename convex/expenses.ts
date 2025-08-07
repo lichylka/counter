@@ -18,6 +18,7 @@ export const addExpense = mutation({
     reports_months_id: v.id("reports_months"),
     reports_quarters_id: v.id("reports_quarters"),
     reports_years_id: v.id("reports_years"),
+    period_month_id: v.id("periods_months"),
   },
   handler: async (ctx, args) => {
     const expensesItemId = await ctx.db.insert("expense_items", {
@@ -63,6 +64,7 @@ export const addExpense = mutation({
       total_expense: total_expense,
       //@ts-ignore
       project_id: args.projectId,
+      periods_months_id: args.period_month_id,
     });
   },
 });

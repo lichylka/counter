@@ -32,7 +32,7 @@ type Props = {
   >;
 };
 
-function PageContent({ params, preloadedReportMonth }: Props) {
+function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
   const expenses =
     useQuery(api.expenses.getExpensesForProjectWithPeriod, {
       projectId: params.projectId,
@@ -198,6 +198,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
         reports_months_id={reportMonth._id}
         reports_quarters_id={reportMonth.report_quarters_id}
         reports_years_id={reportMonth.report_years_id}
+        period_month_id={periodMonth._id}
       />
     </main>
   );

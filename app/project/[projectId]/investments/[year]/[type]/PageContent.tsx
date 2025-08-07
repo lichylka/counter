@@ -136,7 +136,9 @@ function Quarter({
       <tr className="bg-gray-50 font-semibold">
         <td className="px-4 py-2 border">{quarter.period_label}</td>
         <td className="px-4 py-2 border">{quarter.invest_income_total || 0}</td>
-        <td className="px-4 py-2 border">{quarter.expenses_total}</td>
+        <td className="px-4 py-2 border">
+          {quarter.invest_expense_total || 0}
+        </td>
         <td className="px-4 py-2 border">{quarter.invest_profit_total || 0}</td>
         <td className="px-4 py-2 border">
           <Button
@@ -167,7 +169,7 @@ function Quarter({
                   <Link
                     href={`/project/${projectId}/investments/${year}/type/month/${el.period_label.split("/")[0]}/expenses`}
                   >
-                    {el.expenses_total}✏️
+                    {el.invest_expense_total || 0}✏️
                   </Link>
                 </td>
                 <td className="px-4 py-2 border">
