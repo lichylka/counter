@@ -107,7 +107,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           </Button>
         </header>
 
-        {/* Periods Table */}
         <section>
           <table className="w-full table-auto border">
             <thead>
@@ -166,7 +165,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      // onClick={() => onEdit(project)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -180,7 +178,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           </table>
         </section>
 
-        {/* Manual Add Button */}
         <Button
           onClick={handleAddIncome}
           className="bg-green-600 hover:bg-green-700"

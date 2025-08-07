@@ -6,6 +6,7 @@ import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { periodLabelToString } from "@/helpers/periodLabelToString";
+import AIBlock from "@/components/AIBlock";
 
 type Props = {
   params: { projectId: string; year: string };
@@ -25,6 +26,7 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
   const toggleFullTable = () => {
     setShowFullTable((prev) => !prev);
   };
+  
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
       <div className="flex items-center justify-between mb-6">
@@ -36,7 +38,6 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
       </div>
       <div className="text-sm text-gray-600">Період: {year}</div>
 
-      {/* Таблиця P&L */}
       <Card>
         <CardContent className="overflow-auto">
           <table className="min-w-full table-auto border text-sm">
@@ -82,24 +83,7 @@ function PageContent({ params: { projectId, year }, reportYear }: Props) {
         </CardContent>
       </Card>
 
-      {/* Блок AI */}
-      <Card>
-        <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold">
-            🤖 AI-помічник з прибутковості
-          </h2>
-          <input
-            type="text"
-            placeholder="Як підвищити рентабельність продукції?"
-            className="w-full border rounded-md px-4 py-2"
-          />
-          <Button>Запитати у AI</Button>
-          <div className="text-sm text-gray-600">
-            AI: Щоб підвищити рентабельність, варто або оптимізувати виробничі
-            витрати, або переглянути ціноутворення.
-          </div>
-        </CardContent>
-      </Card>
+      <AIBlock />
     </div>
   );
 }

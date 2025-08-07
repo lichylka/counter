@@ -67,28 +67,8 @@ export default function NewProjectModal({
     },
   });
 
-  // useEffect(() => {
-  //   if (initialData) {
-  //     Object.entries(initialData).forEach(([key, value]) => {
-  //       setValue(key as keyof CreateProjectType, value);
-  //     });
-  //   } else {
-  //     reset({
-  //       name: "",
-  //       status: "active",
-  //       start_date: new Date().toISOString().split("T")[0],
-  //       period_plan: 0,
-  //       sales_start: "",
-  //       type: "",
-  //       user_id: userId,
-  //       created_at: new Date().toISOString(),
-  //     });
-  //   }
-  // }, [initialData, isOpen, reset, setValue, userId]);
-
   const formValues = watch();
 
-  // Log form updates
   useEffect(() => {
     console.log("Form values updated:", formValues);
   }, [formValues]);

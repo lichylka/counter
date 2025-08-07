@@ -139,7 +139,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           </table>
         </section>
 
-        {/* Income Details Table */}
         <section>
           <h2 className="text-xl font-semibold mb-2">Деталізація доходів</h2>
           <table className="w-full table-auto border text-sm">
@@ -167,7 +166,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      // onClick={() => onEdit(project)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -181,7 +179,6 @@ function PageContent({ params, preloadedReportMonth }: Props) {
           </table>
         </section>
 
-        {/* Manual Add Button */}
         <Button
           onClick={handleAddIncome}
           className="bg-green-600 hover:bg-green-700"

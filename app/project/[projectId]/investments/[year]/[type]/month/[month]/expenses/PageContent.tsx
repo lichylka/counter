@@ -100,7 +100,6 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
         </Button>
       </div>
 
-      {/* 📅 Витрати за період */}
       <section>
         <h2 className="text-xl font-semibold mb-2"></h2>
         <table className="w-full border table-auto text-sm">
@@ -129,7 +128,6 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
         </table>
       </section>
 
-      {/* 🧾 Таблиця витрат */}
       <section>
         <h2 className="text-xl font-semibold mb-4">Деталізація витрат</h2>
 
@@ -166,11 +164,7 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
                         {item.expense_item?.category}
                       </td>
                       <td className="border px-2 py-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          // onClick={() => onEdit(project)}
-                        >
+                        <Button variant="ghost" size="icon">
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon">
@@ -185,7 +179,6 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
         ))}
       </section>
 
-      {/* ➕ Додати витрату */}
       <button
         onClick={handleAddExpense}
         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -235,33 +228,10 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
                 </tr>
               );
             })}
-            {/* <tr key={item._id}>
-              <td className="border px-2 py-1">{item.expense_item?.name}</td>
-              <td className="border px-2 py-1">{item.expense_item?.unit}</td>
-              <td className="border px-2 py-1">{item.quantity}</td>
-              <td className="border px-2 py-1">{item.price}</td>
-              <td className="border px-2 py-1">{item.total_expense}</td>
-              <td className="border px-2 py-1">
-                {item.expense_item?.category}
-              </td>
-              <td className="border px-2 py-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  // onClick={() => onEdit(project)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </td>
-            </tr> */}
           </tbody>
         </table>
       </div>
 
-      {/* 🤖 AI-помічник */}
       <section>
         <h2 className="text-xl font-semibold mb-2 mt-6">AI-помічник</h2>
         <textarea
@@ -271,10 +241,7 @@ function PageContent({ params, preloadedReportMonth, periodMonth }: Props) {
           className="w-full border p-2 rounded mb-2"
           rows={3}
         />
-        <button
-          // onClick={handleAIQuery}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           🤖 Запитати у AI
         </button>
       </section>

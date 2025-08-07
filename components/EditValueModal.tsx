@@ -105,10 +105,7 @@ export default function EditValueModal({
                 >
                   ✖ Скасувати
                 </button>
-                <button
-                  className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-                  // onClick={handleSave}
-                >
+                <button className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
                   💾 Зберегти
                 </button>
               </div>
@@ -116,15 +113,6 @@ export default function EditValueModal({
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* {showAddRowModal && (
-        <EditValueModalSecondStep
-          handleSaveNewRow={handleSaveNewRow}
-          isOpen={showAddRowModal}
-          setIsOpen={setShowAddRowModal}
-          
-        />
-      )} */}
     </>
   );
 }
