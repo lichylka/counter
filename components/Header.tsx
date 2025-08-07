@@ -17,33 +17,7 @@ function Header() {
             Lichylka
           </Link>
         </div>
-        {/* <ul className="hidden md:flex gap-4">
-          <li>
-            <Link href="#" className="hover:text-gray-300">
-              Головна
-            </Link>
-          </li>
-          <li>
-            <Link href="#features" className="hover:text-gray-300">
-              Можливості
-            </Link>
-          </li>
-          <li>
-            <Link href="#pricing" className="hover:text-gray-300">
-              Тарифи
-            </Link>
-          </li>
-          <li>
-            <Link href="#about" className="hover:text-gray-300">
-              Про нас
-            </Link>
-          </li>
-          <li>
-            <Link href="#contact" className="hover:text-gray-300">
-              Контакти
-            </Link>
-          </li>
-        </ul> */}
+
         {path == "/" ? (
           <div className="flex gap-2">
             <Button variant="outline" asChild className="text-black">

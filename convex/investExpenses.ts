@@ -1,6 +1,7 @@
 import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { updateReports } from "./reportHelpers";
 
 const argsSchema = v.union(
   v.object({
@@ -129,35 +130,8 @@ export const addExpense = mutation({
         })
       );
     }
-
-    const reportMonth = await ctx.db.get(args.reports_months_id);
-    if (!reportMonth) throw new Error("Report month not found");
-    await ctx.db.patch(args.reports_months_id, {
-      invest_expense_total:
-        (reportMonth.invest_expense_total ?? 0) + totalExpense,
-      invest_profit_total:
-        (reportMonth.invest_income_total ?? 0) -
-        (totalExpense + (reportMonth.invest_expense_total ?? 0)),
-    });
-
-    const reportQuarter = await ctx.db.get(reportMonth.report_quarters_id);
-    if (!reportQuarter) throw new Error("Report quarter not found");
-    await ctx.db.patch(args.reports_quarters_id, {
-      invest_expense_total:
-        (reportQuarter.invest_expense_total ?? 0) + totalExpense,
-      invest_profit_total:
-        (reportMonth.invest_income_total ?? 0) -
-        ((reportQuarter.invest_expense_total ?? 0) + totalExpense),
-    });
-
-    const reportYear = await ctx.db.get(reportMonth.report_years_id);
-    if (!reportYear) throw new Error("Report year not found");
-    await ctx.db.patch(args.reports_years_id, {
-      invest_expense_total:
-        (reportYear.invest_expense_total ?? 0) + totalExpense,
-      invest_profit_total:
-        (reportYear.invest_income_total ?? 0) -
-        ((reportQuarter.invest_expense_total ?? 0) + totalExpense),
+    await updateReports(ctx, args.reports_months_id, {
+      investExpense: totalExpense,
     });
 
     return await ctx.db.insert("invest_expenses", {

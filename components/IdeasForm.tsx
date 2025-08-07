@@ -23,24 +23,12 @@ function IdeasForm() {
           className="space-y-4"
           action={async (formData) => {
             const res = await ideaFormAction(formData);
-            if(res.data){
+            if (res.data) {
               toast.success("Ваше повідомлення надіслано");
-            }else{
+            } else {
               toast.error("Помилка при надсиланні повідомлення");
             }
           }}
-          // onSubmit={async (e) => {
-          //   e.preventDefault();
-          //   console.log("send");
-          //   const res = await resend.emails.send({
-          //     from: "ideas@resend.dev",
-          //     to: "economiccounter@gmail.com",
-          //     subject: "Ideas",
-          //     html: `<p>${message}</p>`,
-          //   });
-          //   console.log(res);
-
-          // }}
         >
           <Label htmlFor="message">Ваше повідомлення / побажання:</Label>
           <Textarea
