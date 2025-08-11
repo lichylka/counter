@@ -6,7 +6,6 @@ import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { periodLabelToString } from "@/helpers/periodLabelToString";
-import AIBlock from "@/components/AIBlock";
 import {
   projectMonthRoute,
   ProjectMonthType,

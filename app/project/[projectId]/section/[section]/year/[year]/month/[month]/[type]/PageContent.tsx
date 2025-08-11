@@ -5,7 +5,6 @@ import AddInvestExpenses, {
   MATERIAL_LABELS,
 } from "@/components/AddInvestExpenses";
 import AddInvestIncomeModal from "@/components/AddInvestIncomeModal";
-import AIBlock from "@/components/AIBlock";
 import EditValueModalSecondStep from "@/components/EditValueModalSecondStep";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
@@ -173,7 +172,7 @@ function ProfitIncome({ params, reportMonth }: ChildrenProps) {
     >
   ) => {
     await addIncome({
-      //@ts-ignore
+      //@ts-expect-error Omit simplifies the type 
       args: {
         ...incomeData,
         period: params.month,
