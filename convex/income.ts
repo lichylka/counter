@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { updateReports } from "./reportHelpers";
+import { Id } from "./_generated/dataModel";
 
 export const addIncome = mutation({
   args: {
@@ -20,8 +21,7 @@ export const addIncome = mutation({
       name: args.name,
       unit: args.unit,
       type: args.type,
-      //@ts-ignore
-      project_id: args.projectId,
+      project_id: args.projectId as Id<"projects">,
     });
 
     const total_income = args.quantity * args.price;
@@ -36,8 +36,7 @@ export const addIncome = mutation({
       price: args.price,
       product_id: productId,
       total_income: total_income,
-      //@ts-ignore
-      project_id: args.projectId,
+      project_id: args.projectId as Id<"projects">,
       kind: "Безповоротні",
       category: "Виручка",
     });
@@ -56,6 +55,7 @@ export const getIncomeForProjectWithPeriod = query({
         )
       )
       .collect();
+
     const res = await Promise.all(
       income.map(async (el) => {
         return {

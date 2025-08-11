@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { updateReports } from "./reportHelpers";
+import { Id } from "./_generated/dataModel";
 
 export const addExpense = mutation({
   args: {
@@ -42,8 +43,7 @@ export const addExpense = mutation({
       price: args.price,
       expense_item_id: expensesItemId,
       total_expense: total_expense,
-      //@ts-ignore
-      project_id: args.projectId,
+      project_id: args.projectId as Id<"projects">,
       periods_months_id: args.period_month_id,
     });
   },

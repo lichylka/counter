@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { AssetFinder } from "./AssetFinder";
-import { CreateIvestExpense } from "@/app/project/[projectId]/investments/[year]/[type]/month/[month]/expenses/PageContent";
+import { CreateIvestExpense } from "@/app/project/[projectId]/section/[section]/year/[year]/month/[month]/[type]/PageContent";
 
 type Props = {
   isOpen: boolean;
