@@ -21,6 +21,7 @@ import type * as investExpenses from "../investExpenses.js";
 import type * as investIncomes from "../investIncomes.js";
 import type * as periodMonth from "../periodMonth.js";
 import type * as periodYear from "../periodYear.js";
+import type * as products from "../products.js";
 import type * as projects from "../projects.js";
 import type * as reportHelpers from "../reportHelpers.js";
 import type * as reportMonth from "../reportMonth.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   investIncomes: typeof investIncomes;
   periodMonth: typeof periodMonth;
   periodYear: typeof periodYear;
+  products: typeof products;
   projects: typeof projects;
   reportHelpers: typeof reportHelpers;
   reportMonth: typeof reportMonth;

@@ -13,7 +13,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-import { AssetFinder } from "./AssetFinder";
+import { Finder } from "./Finder";
 import { CreateIvestExpense } from "@/app/project/[projectId]/section/[section]/year/[year]/month/[month]/[type]/PageContent";
 
 export const MATERIAL_LABELS = [
@@ -257,12 +257,17 @@ function AddInvestExpenses({
                 name="assetId"
                 control={control}
                 render={({ field }) => (
-                  <AssetFinder
-                    assets={assets}
+                  <Finder
+                    data={assets.map((asset) => ({
+                      id: asset._id,
+                      value: asset.name,
+                    }))}
                     onChange={field.onChange}
                     value={field.value}
                     setCreate={setCreate}
                     create={create}
+                    placeholder="Виберіть актив"
+                    actionButtonText="Додати актив"
                   />
                 )}
               />
@@ -281,7 +286,9 @@ function AddInvestExpenses({
                   </SelectTrigger>
                   <SelectContent>
                     {MATERIAL_LABELS.map((el) => (
-                      <SelectItem key={el.value} value={el.value}>{el.label}</SelectItem>
+                      <SelectItem key={el.value} value={el.value}>
+                        {el.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

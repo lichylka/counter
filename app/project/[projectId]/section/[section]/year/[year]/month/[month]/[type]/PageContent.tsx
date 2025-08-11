@@ -155,6 +155,11 @@ function ProfitIncome({ params, reportMonth }: ChildrenProps) {
       period: params.month,
     })?.reverse() ?? [];
 
+  const products =
+    useQuery(api.products.getForProject, {
+      projectId: params.projectId,
+    }) ?? [];
+
   const addIncome = useMutation(api.income.addIncome);
 
   const handleAddIncome = () => {
@@ -162,12 +167,18 @@ function ProfitIncome({ params, reportMonth }: ChildrenProps) {
   };
 
   const handleSaveNewRow = async (
-    incomeData: Omit<typeof api.income.addIncome._args, "period" | "projectId">
+    incomeData: Omit<
+      typeof api.income.addIncome._args.args,
+      "period" | "projectId"
+    >
   ) => {
     await addIncome({
-      ...incomeData,
-      period: params.month,
-      projectId: params.projectId,
+      //@ts-ignore
+      args: {
+        ...incomeData,
+        period: params.month,
+        projectId: params.projectId,
+      },
     });
     setIsOpen(false);
   };
@@ -228,6 +239,7 @@ function ProfitIncome({ params, reportMonth }: ChildrenProps) {
         reports_months_id={reportMonth._id}
         reports_quarters_id={reportMonth.report_quarters_id}
         reports_years_id={reportMonth.report_years_id}
+        products={products}
       />
     </div>
   );
@@ -477,8 +489,9 @@ function InvestmentExpenses({ params, reportMonth }: ChildrenProps) {
                   </td>
                   <td className="border px-2 py-1">
                     {
-                      MATERIAL_LABELS.find((material) => material.value == el.assetType)
-                        ?.label
+                      MATERIAL_LABELS.find(
+                        (material) => material.value == el.assetType
+                      )?.label
                     }
                   </td>
                 </tr>
