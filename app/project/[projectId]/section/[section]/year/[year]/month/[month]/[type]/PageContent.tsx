@@ -1,7 +1,9 @@
 "use client";
 
 import AddIncomeModal from "@/components/AddIncomeModal";
-import AddInvestExpenses from "@/components/AddInvestExpenses";
+import AddInvestExpenses, {
+  MATERIAL_LABELS,
+} from "@/components/AddInvestExpenses";
 import AddInvestIncomeModal from "@/components/AddInvestIncomeModal";
 import AIBlock from "@/components/AIBlock";
 import EditValueModalSecondStep from "@/components/EditValueModalSecondStep";
@@ -111,8 +113,7 @@ function PageContent({ params, preloadedReportMonth }: Props) {
                 {periodLabelToString(reportMonth.period_label)}
               </td>
               <td className="border px-4 py-2">
-                {Number(reportMonth[fields.field] ?? 0)}{' '}
-                грн
+                {Number(reportMonth[fields.field] ?? 0)} грн
               </td>
               <td className="border px-4 py-2">
                 <Button variant="link" className="text-purple-600">
@@ -474,14 +475,18 @@ function InvestmentExpenses({ params, reportMonth }: ChildrenProps) {
                   <td className="border px-2 py-1">
                     {assetMonth.closing_balance}
                   </td>
-                  <td className="border px-2 py-1">{el.assetType}</td>
+                  <td className="border px-2 py-1">
+                    {
+                      MATERIAL_LABELS.find((material) => material.value == el.assetType)
+                        ?.label
+                    }
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
-
       <AddInvestExpenses
         isOpen={isOpen}
         handleSaveNewRow={handleSaveNewRow}

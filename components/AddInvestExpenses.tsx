@@ -16,6 +16,25 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { AssetFinder } from "./AssetFinder";
 import { CreateIvestExpense } from "@/app/project/[projectId]/section/[section]/year/[year]/month/[month]/[type]/PageContent";
 
+export const MATERIAL_LABELS = [
+  {
+    value: "bio_multi_year",
+    label: "Біобагаторічний",
+  },
+  {
+    value: "bio_one_year",
+    label: "Біооднорічний",
+  },
+  {
+    value: "material",
+    label: "Матеріальний",
+  },
+  {
+    value: "intangible",
+    label: "Нематеріальний",
+  },
+] as const;
+
 type Props = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -261,12 +280,9 @@ function AddInvestExpenses({
                     <SelectValue placeholder="Тип активу" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bio_multi_year">
-                      Біобагаторічний
-                    </SelectItem>
-                    <SelectItem value="material">Матеріальний</SelectItem>
-                    <SelectItem value="intangible">Нематеріальний</SelectItem>
-                    <SelectItem value="bio_one_year">Біооднорічний</SelectItem>
+                    {MATERIAL_LABELS.map((el) => (
+                      <SelectItem key={el.value} value={el.value}>{el.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
