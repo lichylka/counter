@@ -1,28 +1,41 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { updateReports } from "./reportHelpers";
+import { Id } from "./_generated/dataModel";
+
+const obj = {
+  unit: v.string(),
+  quantity: v.number(),
+  price: v.number(),
+  type: v.string(),
+  period: v.string(),
+  projectId: v.string(),
+  reports_months_id: v.id("reports_months"),
+  reports_quarters_id: v.id("reports_quarters"),
+  reports_years_id: v.id("reports_years"),
+};
+
+const args = v.union(
+  v.object({ ...obj, name: v.string() }),
+  v.object({ ...obj, productId: v.id("products") })
+);
 
 export const addIncome = mutation({
   args: {
-    name: v.string(),
-    unit: v.string(),
-    quantity: v.number(),
-    price: v.number(),
-    type: v.string(),
-    period: v.string(),
-    projectId: v.string(),
-    reports_months_id: v.id("reports_months"),
-    reports_quarters_id: v.id("reports_quarters"),
-    reports_years_id: v.id("reports_years"),
+    args,
   },
-  handler: async (ctx, args) => {
-    const productId = await ctx.db.insert("products", {
-      name: args.name,
-      unit: args.unit,
-      type: args.type,
-      //@ts-ignore
-      project_id: args.projectId,
-    });
+  handler: async (ctx, { args }) => {
+    let productId;
+    if ("productId" in args) {
+      productId = args.productId;
+    } else {
+      productId = await ctx.db.insert("products", {
+        name: args.name,
+        unit: args.unit,
+        type: args.type,
+        project_id: args.projectId as Id<"projects">,
+      });
+    }
 
     const total_income = args.quantity * args.price;
 
@@ -36,8 +49,7 @@ export const addIncome = mutation({
       price: args.price,
       product_id: productId,
       total_income: total_income,
-      //@ts-ignore
-      project_id: args.projectId,
+      project_id: args.projectId as Id<"projects">,
       kind: "Безповоротні",
       category: "Виручка",
     });
@@ -56,6 +68,7 @@ export const getIncomeForProjectWithPeriod = query({
         )
       )
       .collect();
+
     const res = await Promise.all(
       income.map(async (el) => {
         return {

@@ -1,11 +1,18 @@
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import PageContent from "./PageContent";
 import { api } from "@/convex/_generated/api";
+import { ProjectMonthType, ProjectSectionType } from "@/helpers/routes";
 
-export default async function ExpensesPage({
+export default async function page({
   params: paramsPromise,
 }: {
-  params: Promise<{ projectId: string; year: string; month: string }>;
+  params: Promise<{
+    projectId: string;
+    year: string;
+    month: string;
+    section: ProjectSectionType;
+    type: ProjectMonthType;
+  }>;
 }) {
   const params = await paramsPromise;
 
@@ -23,12 +30,7 @@ export default async function ExpensesPage({
     period_months_id: periodMonth._id,
   });
 
-
   return (
-    <PageContent
-      params={params}
-      periodMonth={periodMonth}
-      preloadedReportMonth={preloadedReportMonth}
-    />
+    <PageContent params={params} preloadedReportMonth={preloadedReportMonth} />
   );
 }

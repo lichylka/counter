@@ -16,20 +16,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Doc } from "@/convex/_generated/dataModel";
 
-export function AssetFinder({
-  assets,
+export function Finder({
+  data,
   onChange,
   value,
   setCreate,
   create,
+  placeholder,
+  actionButtonText,
 }: {
-  assets: Doc<"assets">[];
+  data: { id: string; value: string }[];
   onChange: (value: string | undefined) => void;
   value: string | undefined;
   setCreate: (value: boolean) => void;
   create: boolean;
+  placeholder: string;
+  actionButtonText: string;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -43,8 +46,8 @@ export function AssetFinder({
           className="w-[200px] justify-between"
         >
           {value
-            ? assets.find((asset) => asset._id === value)?.name
-            : "Виберіть актив"}
+            ? data.find((asset) => asset.id === value)?.value
+            : placeholder}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -57,10 +60,10 @@ export function AssetFinder({
         <Command>
           <CommandList>
             <CommandGroup>
-              {assets.map((asset) => (
+              {data.map((el) => (
                 <CommandItem
-                  key={asset._id}
-                  value={asset._id}
+                  key={el.id}
+                  value={el.id}
                   onSelect={(currentValue) => {
                     console.log(currentValue);
                     onChange(currentValue === value ? "" : currentValue);
@@ -70,10 +73,10 @@ export function AssetFinder({
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === asset._id ? "opacity-100" : "opacity-0"
+                      value === el.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {asset.name}
+                  {el.value}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -87,7 +90,7 @@ export function AssetFinder({
                   }}
                 >
                   <Plus />
-                  Додати актив
+                  {actionButtonText}
                 </div>
               </CommandItem>
             </CommandGroup>

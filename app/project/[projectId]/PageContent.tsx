@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX } from "react";
+import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,6 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Doc } from "@/convex/_generated/dataModel";
+import { projectYearRoute } from "@/helpers/routes";
+import TableComponent, {
+  Column,
+  TableProps,
+} from "@/components/TableComponent";
 
 export default function ProjectDashboard({
   params,
@@ -23,8 +28,68 @@ export default function ProjectDashboard({
       period_year_ids: periodYears.map((el) => el._id),
     }) ?? [];
 
+  const INVEST_COLUMNS: Column<Doc<"reports_years">>[] = [
+    { header: "Період", key: "year" },
+    { header: "Інвестдоходи", key: "invest_income_total" },
+    { header: "Інвествидатки", key: "invest_expense_total" },
+    { header: "Інвестпотік", key: "invest_profit_total" },
+    {
+      header: "Розрахунок",
+      key: "_id",
+      render: (row) => (
+        <Link
+          href={projectYearRoute({
+            projectId: params.projectId,
+            year: row.year.toString(),
+            section: "investments",
+          })}
+        >
+          <Button variant="outline" size="sm">
+            Редагувати
+          </Button>
+        </Link>
+      ),
+    },
+  ];
+
+  const PROFIT_COLUMNS: Column<Doc<"reports_years">>[] = [
+    { header: "Період", key: "year" },
+    { header: "Доходи", key: "income_total" },
+    { header: "Витрати", key: "expenses_total" },
+    { header: "Прибуток", key: "profit_total" },
+    {
+      header: "Розрахунок",
+      key: "_id",
+      render: (row) => (
+        <Link
+          href={projectYearRoute({
+            projectId: params.projectId,
+            year: row.year.toString(),
+            section: "profit",
+          })}
+        >
+          <Button variant="outline" size="sm">
+            Редагувати
+          </Button>
+        </Link>
+      ),
+    },
+  ];
+
+  const CASHFLOW_COLUMNS: Column<Doc<"reports_years">>[] = [
+    { header: "Період", key: "year" },
+    { header: "Вхідпотік", key: "cashflow_inflow" },
+    { header: "Вихідпотік", key: "cashflow_outflow" },
+    { header: "Чистий потік", key: "cashflow_total" },
+    {
+      header: "Розрахунок",
+      key: "_id",
+      render: () => <Button variant="outline">Розгорнути</Button>,
+    },
+  ];
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
+    <div className="space-y-10">
       <header className="space-y-2">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Проект: {projectData.name}</h1>
@@ -50,141 +115,48 @@ export default function ProjectDashboard({
       </header>
 
       <Card className="p-4">
-        <TableWithTitle
+        <TableWithTitle<Doc<"reports_years">>
           title="Інвестиції та позики"
-          rows={reportYears.map((el) => [
-            el.year,
-            el.invest_income_total ?? 0,
-            el.invest_expense_total ?? 0,
-            el.invest_profit_total ?? 0,
-          ])}
+          data={reportYears}
           summary
-          columns={[
-            "Період",
-            "Інвестдоходи",
-            "Інвествидатки",
-            "Інвестпотік",
-            "Розрахунок",
-          ]}
-          projectId={params.projectId}
-          rowAction={(year) => (
-            <Link
-              href={`/project/${params.projectId}/investments/${year}/${"type"}`}
-            >
-              <Button variant="outline" size="sm">
-                Редагувати
-              </Button>
-            </Link>
-          )}
+          columns={INVEST_COLUMNS}
         />
       </Card>
 
       <Card className="p-4">
-        <TableWithTitle
+        <TableWithTitle<Doc<"reports_years">>
           title="Звіт (P&L)"
-          columns={["Період", "Доходи", "Витрати", "Прибуток", "Розрахунок"]}
-          rows={reportYears.map((el) => [
-            el.year,
-            el.income_total,
-            el.expenses_total,
-            el.profit_total,
-          ])}
+          columns={PROFIT_COLUMNS}
+          data={reportYears}
           summary
-          projectId={params.projectId}
-          rowAction={(year) => (
-            <Link href={`/project/${params.projectId}/profit/year/${year}`}>
-              <Button variant="outline" size="sm">
-                Редагувати
-              </Button>
-            </Link>
-          )}
         />
       </Card>
 
       <Card className="p-4">
-        <TableWithTitle
+        <TableWithTitle<Doc<"reports_years">>
           title="Грошопотік"
-          columns={[
-            "Період",
-            "Вхідпотік",
-            "Вихідпотік",
-            "Чистий потік",
-            "Розрахунок",
-          ]}
-          rows={reportYears.map((el) => [
-            el.year,
-            el.cashflow_inflow,
-            el.cashflow_outflow,
-            el.cashflow_total,
-          ])}
+          columns={CASHFLOW_COLUMNS}
+          data={reportYears}
           summary
-          projectId={params.projectId}
-          rowAction={() => <Button variant="outline">Розгорнути</Button>}
         />
       </Card>
     </div>
   );
 }
 
-function TableWithTitle({
+type TableWithTitleProps<T> = { title: string } & TableProps<T>;
+
+export function TableWithTitle<T extends Record<string, any>>({
   title,
-  columns = ["Період", "Доходи", "Витрати", "Прибуток", "Розрахунок"],
-  rows,
-  summary = false,
-  rowAction,
-}: {
-  title: string;
-  columns: string[];
-  rows: number[][];
-  summary?: boolean;
-  projectId: string;
-  rowAction: (year: number) => JSX.Element;
-}) {
+  className,
+  ...props
+}: TableWithTitleProps<T>) {
   return (
-    <div>
-      <div className="overflow-x-auto"></div>
-      {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
-      <table className="min-w-full border-collapse border border-gray-300 text-xs">
-        <thead className="bg-gray-100">
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column}
-                className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700"
-              >
-                {column}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index} className="even:bg-gray-50">
-              {row.map((el, ind) => (
-                <td className="border border-gray-300 px-4 py-2" key={ind}>
-                  {el}
-                </td>
-              ))}
-              <td className="border border-gray-300 px-4 py-2">
-                {rowAction(row[0])}
-              </td>
-            </tr>
-          ))}
-          {summary && (
-            <tr className="bg-green-100  font-semibold">
-              <td className="border border-gray-300 px-4 py-2">Разом</td>
-              {Array.from({ length: rows[0]?.length - 1 }, (_, i) => i + 1).map(
-                (ind) => (
-                  <td className="border border-gray-300 px-4 py-2" key={ind}>
-                    {rows.reduce((sum, row) => sum + (row.at(ind) || 0), 0)}
-                  </td>
-                )
-              )}
-              <td className="border border-gray-300 px-4 py-2"></td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className={className}>
+      <div className="overflow-x-auto">
+        {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
+        <TableComponent {...props} />
+      </div>
     </div>
   );
 }

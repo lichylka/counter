@@ -8,6 +8,7 @@ import IdeasForm from "@/components/IdeasForm";
 
 export default function Home() {
   const formRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}

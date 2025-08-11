@@ -1,11 +1,16 @@
 import { api } from "@/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import PageContent from "./PageContent";
+import { ProjectSectionType } from "@/helpers/routes";
 
 export default async function ProfitReportPage({
   params: paramsPromise,
 }: {
-  params: Promise<{ projectId: string; year: string }>;
+  params: Promise<{
+    projectId: string;
+    year: string;
+    section: ProjectSectionType;
+  }>;
 }) {
   const params = await paramsPromise;
 
@@ -14,11 +19,8 @@ export default async function ProfitReportPage({
     year: +params.year,
   });
 
-  
   if (!periodYear) throw new Error("Період року не знайдено");
-  
-  console.log(periodYear._id);
-  
+
   const reportYear = await fetchQuery(api.reportYear.getOneWithIncludes, {
     period_year_id: periodYear._id,
   });
