@@ -19,44 +19,80 @@ export async function updateReports(
   const reportMonth = await ctx.db.get(reports_months_id);
   if (!reportMonth) throw new Error("Report month not found");
 
-  await ctx.db.patch(reports_months_id, {
-    expenses_total: reportMonth.expenses_total + expense,
-    income_total: reportMonth.income_total + income,
-    profit_total: reportMonth.profit_total - expense + income,
+  const expensesMonth = reportMonth.expenses_total + expense;
+  const incomeMonth = reportMonth.income_total + income;
+  const profitMonth = incomeMonth - expensesMonth;
 
-    invest_expense_total:
-      (reportMonth.invest_expense_total ?? 0) + investExpense,
-    invest_income_total: (reportMonth.invest_income_total ?? 0) + investIncome,
-    invest_profit_total:
-      (reportMonth.invest_profit_total ?? 0) - investExpense + investIncome,
+  const investExpensesMonth =
+    (reportMonth.invest_expense_total ?? 0) + investExpense;
+  const investIncomeMonth =
+    (reportMonth.invest_income_total ?? 0) + investIncome;
+  const investProfitMonth = investIncomeMonth - investExpensesMonth;
+
+  await ctx.db.patch(reports_months_id, {
+    expenses_total: expensesMonth,
+    income_total: incomeMonth,
+    profit_total: profitMonth,
+
+    invest_expense_total: investExpensesMonth,
+    invest_income_total: investIncomeMonth,
+    invest_profit_total: investProfitMonth,
+
+    cashflow_outflow: expensesMonth + investExpensesMonth,
+    cashflow_inflow: incomeMonth + investIncomeMonth,
+    cashflow_total: profitMonth + investProfitMonth,
   });
 
   const reportQuarter = await ctx.db.get(reportMonth.report_quarters_id);
   if (!reportQuarter) throw new Error("Report quarter not found");
-  await ctx.db.patch(reportQuarter._id, {
-    expenses_total: reportQuarter.expenses_total + expense,
-    income_total: reportQuarter.income_total + income,
-    profit_total: reportQuarter.profit_total - expense + income,
 
-    invest_expense_total:
-      (reportQuarter.invest_expense_total ?? 0) + investExpense,
-    invest_income_total:
-      (reportQuarter.invest_income_total ?? 0) + investIncome,
-    invest_profit_total:
-      (reportQuarter.invest_profit_total ?? 0) - investExpense + investIncome,
+  const expensesQuarter = reportQuarter.expenses_total + expense;
+  const incomeQuarter = reportQuarter.income_total + income;
+  const profitQuarter = incomeQuarter - expensesQuarter;
+
+  const investExpensesQuarter =
+    (reportQuarter.invest_expense_total ?? 0) + investExpense;
+  const investIncomeQuarter =
+    (reportQuarter.invest_income_total ?? 0) + investIncome;
+  const investProfitQuarter = investIncomeQuarter - investExpensesQuarter;
+
+  await ctx.db.patch(reportQuarter._id, {
+    expenses_total: expensesQuarter,
+    income_total: incomeQuarter,
+    profit_total: profitQuarter,
+
+    invest_expense_total: investExpensesQuarter,
+    invest_income_total: investIncomeQuarter,
+    invest_profit_total: investProfitQuarter,
+
+    cashflow_outflow: expensesQuarter + investExpensesQuarter,
+    cashflow_inflow: incomeQuarter + investIncomeQuarter,
+    cashflow_total: profitQuarter + investProfitQuarter,
   });
 
   const reportYear = await ctx.db.get(reportMonth.report_years_id);
   if (!reportYear) throw new Error("Report year not found");
-  await ctx.db.patch(reportYear._id, {
-    expenses_total: reportYear.expenses_total + expense,
-    income_total: reportYear.income_total + income,
-    profit_total: reportYear.profit_total - expense + income,
 
-    invest_expense_total:
-      (reportYear.invest_expense_total ?? 0) + investExpense,
-    invest_income_total: (reportYear.invest_income_total ?? 0) + investIncome,
-    invest_profit_total:
-      (reportYear.invest_profit_total ?? 0) - investExpense + investIncome,
+  const expensesYear = reportYear.expenses_total + expense;
+  const incomeYear = reportYear.income_total + income;
+  const profitYear = incomeYear - expensesYear;
+
+  const investExpensesYear =
+    (reportYear.invest_expense_total ?? 0) + investExpense;
+  const investIncomeYear = (reportYear.invest_income_total ?? 0) + investIncome;
+  const investProfitYear = investIncomeYear - investExpensesYear;
+
+  await ctx.db.patch(reportYear._id, {
+    expenses_total: expensesYear,
+    income_total: incomeYear,
+    profit_total: profitYear,
+
+    invest_expense_total: investExpensesYear,
+    invest_income_total: investIncomeYear,
+    invest_profit_total: investProfitYear,
+
+    cashflow_outflow: expensesYear + investExpensesYear,
+    cashflow_inflow: incomeYear + investIncomeYear,
+    cashflow_total: profitYear + investProfitYear,
   });
 }
