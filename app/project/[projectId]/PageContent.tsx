@@ -120,6 +120,7 @@ export default function ProjectDashboard({
           data={reportYears}
           summary
           columns={INVEST_COLUMNS}
+          lastRowClassName="bg-green-300"
         />
       </Card>
 
@@ -138,6 +139,7 @@ export default function ProjectDashboard({
           columns={CASHFLOW_COLUMNS}
           data={reportYears}
           summary
+          lastRowClassName="bg-green-50"
         />
       </Card>
     </div>
