@@ -14,6 +14,7 @@ export type TableProps<T> = {
   onRowClick?: (row: T) => void;
   className?: string;
   expandableComponent?: React.ReactNode;
+  lastRowClassName?: string;
 };
 
 function TableComponent<T extends Record<string, any>>({
@@ -23,6 +24,7 @@ function TableComponent<T extends Record<string, any>>({
   onRowClick,
   summary,
   expandableComponent,
+  lastRowClassName = "",
 }: TableProps<T>) {
   const calculateColumnTotal = (key: string) => {
     return data.reduce((sum, row) => {
@@ -51,7 +53,7 @@ function TableComponent<T extends Record<string, any>>({
         </tr>
       </thead>
       <tbody>
-      {expandableComponent}
+        {expandableComponent}
         {data.map((row, index) => (
           <tr
             key={index}
@@ -71,8 +73,11 @@ function TableComponent<T extends Record<string, any>>({
           </tr>
         ))}
         {summary && data.length > 0 && (
-          <tr className="bg-green-100 font-semibold">
-            <td className="border border-gray-300 px-4 py-2">Total</td>
+          <tr
+            className={cn("bg-green-100 font-semibold", lastRowClassName)}
+            data-lastrow="true"
+          >
+            <td className="border border-gray-300 px-4 py-2">Разом</td>
             {columns.slice(1).map((column) => (
               <td
                 key={column.key.toString()}
